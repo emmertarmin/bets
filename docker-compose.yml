@@ -1,21 +1,15 @@
 services:
-  webserver:
-    image: nginx:latest
-    container_name: nginx
+  pocketbase:
+    container_name: pocketbase
+    build:
+      context: .
+      dockerfile: Dockerfile_Pocketbase
     ports:
-      - 80:80
-      - 443:443
-    restart: unless-stopped
+      - 8090:8090
     volumes:
-      - ./nginx/conf/:/etc/nginx/conf.d/:ro
-      - ./certbot/www:/var/www/certbot/:ro
-      - ./certbot/conf/:/etc/nginx/ssl/:ro
-      - ./www:/var/www/html:ro
-      - ./nginx/logs:/var/log/nginx:rw
-  certbot:
-    image: certbot/certbot:latest
-    container_name: certbot
-    volumes:
-      - ./certbot/www/:/var/www/certbot/:rw
-      - ./certbot/conf/:/etc/letsencrypt/:rw
-    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot certonly --webroot --webroot-path=/var/www/certbot --email emmertarmin@gmail.com --agree-tos --no-eff-email -d lab.emmert.hu; sleep 12h & wait $${!}; done;'"
+      - ./pb/pb_data:/pb/pb_data
+    healthcheck: #optional (recommended) since v0.10.0
+      test: wget --no-verbose --tries=1 --spider http://localhost:8090/api/health || exit 1
+      interval: 5s
+      timeout: 5s
+      retries: 5

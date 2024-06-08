@@ -9,3 +9,6 @@ certbot/www/*
 
 nginx/logs/*
 !nginx/logs/.gitkeep
+
+pb/pb_data/*
+!pb/pb_data/.gitkeep
