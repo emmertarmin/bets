@@ -1,0 +1,14 @@
+---
+
+const { group } = Astro.props
+
+---
+
+<div>
+  <h2>{group.name}</h2>
+  {/* <pre>{JSON.stringify(group, null, 2)}</pre> */}
+  <p><a href={`/teams/${group.expand.team_1.country_code_3}`}>{group.expand.team_1.name}</a></p>
+  <p><a href={`/teams/${group.expand.team_2.country_code_3}`}>{group.expand.team_2.name}</a></p>
+  <p><a href={`/teams/${group.expand.team_3.country_code_3}`}>{group.expand.team_3.name}</a></p>
+  <p><a href={`/teams/${group.expand.team_4.country_code_3}`}>{group.expand.team_4.name}</a></p>
+</div>

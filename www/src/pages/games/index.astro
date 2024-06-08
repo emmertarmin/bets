@@ -1,0 +1,75 @@
+---
+import Layout from "@/layouts/Layout.astro"
+import { pb } from "@/services/pocketbase"
+
+export const prerender = false
+
+const { id } = Astro.params
+
+// or fetch only the first record that matches the specified filter
+const records = await pb.collection('games').getFullList({
+  sort: 'date',
+  expand: 'team_1,team_2',
+})
+
+---
+
+<Layout title="Games">
+  <h1>Games</h1>
+  <table>
+    {records.map((record) => (
+      <tr>
+        <td>{record.date.substring(0,10)} {new Date(record.date).toISOString().substring(11, 16)}</td>
+        <td><a href={`/games/${record.num}`}>{record.expand.team_1.country_code_3.toUpperCase()} v {record.expand.team_2.country_code_3.toUpperCase()}</a></td>
+        <td class="score">{
+          (record.team_1_score || record.team_2_score)
+            ? <span>{record.team_1_score} - {record.team_2_score}</span>
+            : <span>-</span>
+        }</td>
+        <td class="game" data-date={new Date(record.date).toISOString()}></td>
+      </tr>
+    ))}
+  </table>
+  <!-- <pre>{JSON.stringify(records, null, 2)}</pre> -->
+</Layout>
+
+<style>
+  table {
+    border-collapse: collapse;
+    tr {
+      td {
+        border: 1px solid #444;
+        padding: 0.5rem;
+        &.score {
+          text-align: center;
+        }
+      }
+    }
+
+  }
+</style>
+
+<script>
+  const games = document.querySelectorAll('.game')
+  const zeropad = (n: number) => n < 10 ? `0${n}` : n
+  function updateTimes() {
+    const now = new Date()
+    games.forEach(game => {
+      const date = new Date(game.getAttribute('data-date'))
+      const diff = date - now
+      if (diff < 0) return game.innerHTML = 'Finished'
+      const minutes = Math.floor(diff / 60000)
+      const hours = Math.floor(minutes / 60)
+      const days = Math.floor(hours / 24)
+      const hoursLeft = hours - (days * 24)
+      const minutesLeft = minutes - (hours * 60)
+      const secondsLeft = Math.floor((diff / 1000) % 60)
+      if (days > 3) game.innerHTML = ''
+      else if (date.toISOString().substring(0, 10) === now.toISOString().substring(0, 10)) game.innerHTML = `${zeropad(hoursLeft)}:${zeropad(minutesLeft)}:${zeropad(secondsLeft)}`
+      else if (diff > 0) game.innerHTML = date.toLocaleString('en-us', {  weekday: 'long' })
+      else game.innerHTML = '-'
+    })
+  }
+  updateTimes()
+  setInterval(updateTimes, 1000)
+</script>

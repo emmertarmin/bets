@@ -1,0 +1,58 @@
+---
+import Layout from "@/layouts/Layout.astro"
+import { pb } from "@/services/pocketbase"
+
+export const prerender = false
+
+const { id } = Astro.params
+
+const record = await pb.collection('games').getFirstListItem(`num="${id}"`, {})
+
+---
+
+<Layout title={`Game ${id}`}>
+  <h1>{`Game ${id}`}</h1>
+
+  <pre>{JSON.stringify(record, null, 2)}</pre>
+</Layout>
+
+<style>
+  table {
+    border-collapse: collapse;
+    tr {
+      td {
+        border: 1px solid #444;
+        padding: 0.5rem;
+        &.score {
+          text-align: center;
+        }
+      }
+    }
+
+  }
+</style>
+
+<script>
+  const games = document.querySelectorAll('.game')
+  const zeropad = (n: number) => n < 10 ? `0${n}` : n
+  function updateTimes() {
+    const test = new Date()
+    const now = new Date(`2024-06-19T16:07:${zeropad(test.getSeconds())}Z`)
+    games.forEach(game => {
+      const date = new Date(game.getAttribute('data-date'))
+      const diff = date - now
+      if (diff < 0) return game.innerHTML = 'Finished'
+      const minutes = Math.floor(diff / 60000)
+      const hours = Math.floor(minutes / 60)
+      const days = Math.floor(hours / 24)
+      const hoursLeft = hours - (days * 24)
+      const minutesLeft = minutes - (hours * 60)
+      const secondsLeft = Math.floor((diff / 1000) % 60)
+      if (date.toISOString().substring(0, 10) === now.toISOString().substring(0, 10)) game.innerHTML = `${zeropad(hoursLeft)}:${zeropad(minutesLeft)}:${zeropad(secondsLeft)}`
+      else if (diff > 0) game.innerHTML = date.toLocaleString('en-us', {  weekday: 'long' })
+      else game.innerHTML = '-'
+    })
+  }
+  updateTimes()
+  setInterval(updateTimes, 1000)
+</script>
