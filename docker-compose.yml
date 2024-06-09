@@ -1,15 +1,8 @@
 services:
-  pocketbase:
-    container_name: pocketbase
+  web:
+    container_name: astro_frontend
     build:
-      context: .
-      dockerfile: Dockerfile_Pocketbase
+      context: ./www
+      dockerfile: Dockerfile_Astro
     ports:
-      - 8090:8090
-    volumes:
-      - ./pb/pb_data:/pb/pb_data
-    healthcheck: #optional (recommended) since v0.10.0
-      test: wget --no-verbose --tries=1 --spider http://localhost:8090/api/health || exit 1
-      interval: 5s
-      timeout: 5s
-      retries: 5
+      - 4321:4321
