@@ -12,6 +12,9 @@ services:
       - ./certbot/conf/:/etc/nginx/ssl/:ro
       - ./www:/var/www/html:ro
       - ./nginx/logs:/var/log/nginx:rw
+  depends_on:
+    - web
+    - pocketbase
   web:
     container_name: astro_frontend
     build:
@@ -19,6 +22,8 @@ services:
       dockerfile: Dockerfile_Astro
     ports:
       - 4321:4321
+    depends_on:
+      - pocketbase
   pocketbase:
     container_name: pocketbase
     build:
