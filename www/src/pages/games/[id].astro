@@ -1,17 +1,107 @@
 ---
-import Layout from "@/layouts/Layout.astro"
-import { pb } from "@/services/pocketbase"
+import Layout from "@/layouts/Layout.astro";
+import { pb } from "@/services/pocketbase";
 
-export const prerender = false
+export const prerender = false;
 
-const { id } = Astro.params
+const { id } = Astro.params as { id: string };
 
-const record = await pb.collection('games').getFirstListItem(`num="${id}"`, {})
+const gameRecord = await pb.collection("games").getOne(id, { expand: "team_1,team_2" });
 
+const gameRecords = await pb
+  .collection("games")
+  .getList(1, 3, {
+    filter: `num="${parseInt(gameRecord.num) + 1}" || num="${parseInt(gameRecord.num) - 1}"`,
+    expand: "team_1,team_2",
+  })
+
+const prevGameRecord = gameRecords.items.find((game) => game.num === parseInt(gameRecord.num) - 1);
+const nextGameRecord = gameRecords.items.find((game) => game.num === parseInt(gameRecord.num) + 1);
+
+const isLoggedIn = pb.authStore.isValid;
+
+const betRecord = !isLoggedIn ? null : await pb.collection("bets").getList(1, 1, {filter: `game="${id}" && user="${pb.authStore.model?.id}"`}).then((bets) => (bets.items[0] || null));
 ---
 
 <Layout title={`Game ${id}`}>
-  <h1>{`Game ${id}`}</h1>
+  <div style={{ display: "flex", justifyContent: "space-between" }}>
+    {
+      prevGameRecord
+        ? (<div>&larr;&nbsp;<a href={`/games/${prevGameRecord.id}`}>{prevGameRecord.name}</a></div>)
+        : (<div />)
+    }
+    {
+      nextGameRecord
+      ? (<div><a href={`/games/${nextGameRecord.id}`}>{nextGameRecord.name}</a>&nbsp;&rarr;</div>)
+      : (<div />)
+    }
+  </div>
+  <center>
+    <h1>{`${gameRecord.expand?.team_1.name} vs ${gameRecord.expand?.team_2.name}`}</h1>
+    <h3>{gameRecord.date.substring(0,10)}, {new Date(gameRecord.date).toLocaleString('en-us', {  weekday: 'long' })}, {gameRecord.date.substring(11,16)}</h3>
+  </center>
+  {betRecord && (
+    <blockquote>
+      You bet {gameRecord.expand?.team_1.name} vs {gameRecord.expand?.team_2.name}: {betRecord?.team_1_score_bet} : {betRecord?.team_2_score_bet}.
+  </blockquote>
+  )}
 
-  <pre>{JSON.stringify(record, null, 2)}</pre>
+  {!isLoggedIn && (
+    <p>
+      You need to be <a href="/auth/login">logged in</a> to place bets.
+    </p>
+  )}
+  {(isLoggedIn && !betRecord) && (
+    <div>
+      <h3>Place a bet!</h3>
+      <form hx-post="/api/bets" hx-target="#bet-create-result" id="bet-create-form">
+        <label>
+          <span>{gameRecord.expand?.team_1.name}</span>
+          <input type="number" name="team_1_score_bet" required />
+        </label>
+        <label>
+          <span>{gameRecord.expand?.team_2.name}</span>
+          <input type="number" name="team_2_score_bet" required />
+        </label>
+        <input type="hidden" name="gameID" value={gameRecord.id} />
+        <button type="submit">Place bet</button>
+      </form>
+      <div id="bet-create-result" />
+    </div>
+  )}
+  {(isLoggedIn && betRecord) && (
+    <div>
+      <details>
+        <summary>
+          Change bet
+        </summary>
+        <form hx-put="/api/bets" hx-target="#bet-update-result" id="bet-update-form">
+          <label>
+            <span>{gameRecord.expand?.team_1.name}</span>
+            <input type="number" name="team_1_score_bet" value={betRecord.team_1_score_bet} required />
+          </label>
+          <label>
+            <span>{gameRecord.expand?.team_2.name}</span>
+            <input type="number" name="team_2_score_bet" value={betRecord.team_2_score_bet} required />
+          </label>
+          <input type="hidden" name="gameID" value={gameRecord.id} />
+          <input type="hidden" name="betID" value={betRecord.id} />
+          <button type="submit">Change bet</button>
+        </form>
+        <div id="bet-update-result" />
+      </details>
+      <details>
+        <summary>
+          Delete bet
+        </summary>
+        <form hx-delete="/api/bets" hx-target="#bet-delete-result" id="bet-delete-form">
+          <input type="hidden" name="betID" value={betRecord.id} />
+          <button type="submit">Delete bet</button>
+        </form>
+        <div id="bet-delete-result" />
+      </details>
+    </div>
+  )}
+
+  <!-- <pre>{JSON.stringify(betRecord, null, 2)}</pre> -->
 </Layout>

@@ -1,0 +1,22 @@
+---
+import Layout from "@/layouts/Layout.astro"
+import { pb } from "@/services/pocketbase"
+
+export const prerender = false
+
+if (!pb.authStore.isValid) {
+  return Astro.redirect('/auth/login');
+}
+
+const userData = pb.authStore.model
+
+
+---
+
+<Layout title="Account">
+  <h1>Account</h1>
+  <pre>{JSON.stringify(userData, null, 2)}</pre>
+
+  <!-- <button onClick={() => {fetch('/api/auth/logout', {method: 'POST', credentials: 'same-origin'}).then(() => window.location.reload())}}>Logout</button> -->
+   <button hx-post="/api/auth/logout" hx-trigger="click" hx-swap="none">Logout</button>
+</Layout>

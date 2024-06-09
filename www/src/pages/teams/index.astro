@@ -2,7 +2,7 @@
 import Layout from '@/layouts/Layout.astro'
 import { pb } from '@/services/pocketbase'
 
-export const prerender = false
+export const prerender = true
 
 const records = await pb.collection("teams").getFullList({
   sort: "name"
