@@ -4,9 +4,6 @@ import { pb } from "@/services/pocketbase"
 
 export const prerender = false
 
-const { id } = Astro.params
-
-// or fetch only the first record that matches the specified filter
 const records = await pb.collection('games').getFullList({
   sort: 'date',
   expand: 'team_1,team_2',
@@ -20,7 +17,7 @@ const records = await pb.collection('games').getFullList({
     {records.map((record) => (
       <tr>
         <td>{record.date.substring(0,10)} {new Date(record.date).toISOString().substring(11, 16)}</td>
-        <td><a href={`/games/${record.num}`}>{record.expand.team_1.country_code_3.toUpperCase()} v {record.expand.team_2.country_code_3.toUpperCase()}</a></td>
+        <td><a href={`/games/${record.num}`}>{record.expand?.team_1.country_code_3.toUpperCase()} v {record.expand?.team_2.country_code_3.toUpperCase()}</a></td>
         <td class="score">{
           (record.team_1_score || record.team_2_score)
             ? <span>{record.team_1_score} - {record.team_2_score}</span>
@@ -55,8 +52,8 @@ const records = await pb.collection('games').getFullList({
   function updateTimes() {
     const now = new Date()
     games.forEach(game => {
-      const date = new Date(game.getAttribute('data-date'))
-      const diff = date - now
+      const date = new Date(game.getAttribute('data-date') as string)
+      const diff = date.getTime() - now.getTime()
       if (diff < 0) return game.innerHTML = 'Finished'
       const minutes = Math.floor(diff / 60000)
       const hours = Math.floor(minutes / 60)

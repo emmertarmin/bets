@@ -1,5 +1,5 @@
 services:
-  webserver:
+  nginx:
     image: nginx:latest
     container_name: nginx
     ports:
@@ -12,6 +12,13 @@ services:
       - ./certbot/conf/:/etc/nginx/ssl/:ro
       - ./www:/var/www/html:ro
       - ./nginx/logs:/var/log/nginx:rw
+  web:
+    container_name: astro_frontend
+    build:
+      context: ./www
+      dockerfile: Dockerfile_Astro
+    ports:
+      - 4321:4321
   pocketbase:
     container_name: pocketbase
     build:
