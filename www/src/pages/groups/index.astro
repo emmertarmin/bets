@@ -13,5 +13,5 @@ const records = await pb.collection("groups").getFullList({
   <h1>Groups</h1>
   {records.map((record) => (
     <GroupItem key={record.id} group={record} />
-  ))
+  ))}
 </Layout>
