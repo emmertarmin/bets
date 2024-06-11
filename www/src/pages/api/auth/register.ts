@@ -38,20 +38,24 @@ export async function POST({ request, cookies }: any) {
     username: formObject.email.split('@')[0],
     emailVisibility: true
   }
-
-  const record = await pb.collection('users').create(data);
-
-  const authData = await pb.collection('users').authWithPassword(
-    record.email,
-    formObject.password
-  );
-
-  if (!authData) {
-    return new Response('<p>Authentication failed</p>', { status: 401, headers });
+  try {
+    const record = await pb.collection('users').create(data);
+  
+    const authData = await pb.collection('users').authWithPassword(
+      record.email,
+      formObject.password
+    );
+  
+    if (!authData) {
+      return new Response('<p>Authentication failed</p>', { status: 401, headers });
+    }
+  
+    cookies.set('token', authData.token, { httpOnly: false });
+  
+    return new Response(
+      `<pre>${JSON.stringify({record, authData}, null, 2)}</pre>`, { status: 200, headers });
+  } catch (error: any) {
+    return new Response(
+      `<p>${error.message}</p>`, { status: 400, headers });
   }
-
-  cookies.set('token', authData.token, { httpOnly: false });
-
-  return new Response(
-    `<pre>${JSON.stringify({record, authData}, null, 2)}</pre>`, { status: 200, headers });
 }

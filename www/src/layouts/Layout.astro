@@ -22,20 +22,22 @@ const isLoggedIn = pb.authStore.isValid;
 		<title>{title}</title>
 	</head>
 	<body>
-    <nav>
-      <ul>
-        <li><a href="/">Home</a></li>
-        <li><a href="/games">Games</a></li>
-        <li><a href="/groups">Groups</a></li>
-        <li><a href="/teams">Teams</a></li>
-        {(!isLoggedIn) && (
-          <li><a href="/auth/login">Log in</a></li>
-        )}
-        {(isLoggedIn) && (
-          <li><a href="/auth/account">Account</a></li>
-        )}
-      </ul>
-    </nav>
+    {(isLoggedIn) && (
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/games">Games</a></li>
+          <li><a href="/groups">Groups</a></li>
+          <li><a href="/teams">Teams</a></li>
+          {(!isLoggedIn) && (
+            <li><a href="/auth/login">Log in</a></li>
+          )}
+          {(isLoggedIn) && (
+            <li><a href="/auth/account">Account</a></li>
+          )}
+        </ul>
+      </nav>
+    )}
 		<slot />
 	</body>
 </html>
@@ -59,6 +61,9 @@ const isLoggedIn = pb.authStore.isValid;
 		background-size: 224px;
     color: white;
 	}
+  input[type="number"],input[type="text"],input[type="email"],input[type="password"] {
+    @apply py-1 bg-slate-600 border-2 border-transparent rounded-md focus:border-purple-400 ring-0 outline-none;
+  }
 	code {
 		font-family:
 			Menlo,
