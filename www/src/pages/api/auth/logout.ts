@@ -9,9 +9,9 @@ export async function POST({ cookies }: any) {
 
   pb.authStore.clear();
 
-  cookies.delete('token');
+  cookies.delete('pbToken');
 
-  headers['HX-Location'] = '/auth/login';
+  headers['HX-Location'] = '/login';
 
   return new Response(
     '', { status: 200, headers });

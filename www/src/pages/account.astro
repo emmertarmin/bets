@@ -1,0 +1,27 @@
+---
+import Layout from "@/layouts/Layout.astro"
+import { pbGET } from "@/services/pocketbase"
+
+export const prerender = false
+
+const userData = await pbGET(
+  '/api/collections/users/records', {
+    page: 1,
+    perPage: 1
+  },
+  Astro.cookies.get('pbToken')?.value
+).then(res => res.data.items[0])
+
+if (!userData?.id) {
+  Astro.cookies.delete('pbToken')
+  Astro.redirect('/login', 303)
+}
+
+---
+
+<Layout title="Account">
+  <h1>Account</h1>
+  <pre>{JSON.stringify({userData}, null, 2)}</pre>
+
+   <button hx-post="/api/auth/logout" hx-trigger="click" hx-swap="none">Logout</button>
+</Layout>

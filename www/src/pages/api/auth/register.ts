@@ -1,14 +1,10 @@
-import { pb } from "@/services/pocketbase";
+import { pb, pbPOST } from "@/services/pocketbase";
 
 export const prerender = false;
 
 export async function POST({ request, cookies }: any) {
-  // if backend detects that request is coming from HTMX (by checking if HX-Request request header exists), it responds with HX-Location redirection, and if not it responds with Location header.
+  const pbToken = cookies.get('pbToken')?.value
   const headers: any = { "Content-Type": "text/html" };
-  // if (request.headers.get('HX-Request')) {
-  //   headers['HX-Location'] = '/auth/login';
-  // }
-
 
   const formData = await request.formData()
 
@@ -18,19 +14,19 @@ export async function POST({ request, cookies }: any) {
   }
 
   if (!formObject.email) {
-    return new Response('<p>Email is required</p>', { status: 400, headers });
+    return new Response('<p class="fadeOut">Email is required</p>', { status: 400, headers });
   }
 
   if (!formObject.password) {
-    return new Response('<p>Password is required</p>', { status: 400, headers });
+    return new Response('<p class="fadeOut">Password is required</p>', { status: 400, headers });
   }
 
   if (!formObject.passwordConfirm) {
-    return new Response('<p>Password confirmation is required</p>', { status: 400, headers });
+    return new Response('<p class="fadeOut">Password confirmation is required</p>', { status: 400, headers });
   }
 
   if (formObject.password !== formObject.passwordConfirm) {
-    return new Response('<p>Passwords do not match</p>', { status: 400, headers });
+    return new Response('<p class="fadeOut">Passwords do not match</p>', { status: 400, headers });
   }
 
   const data = {
@@ -39,23 +35,27 @@ export async function POST({ request, cookies }: any) {
     emailVisibility: true
   }
   try {
-    const record = await pb.collection('users').create(data);
-  
-    const authData = await pb.collection('users').authWithPassword(
-      record.email,
-      formObject.password
-    );
-  
-    if (!authData) {
-      return new Response('<p>Authentication failed</p>', { status: 401, headers });
+    const record = await pbPOST('/api/collections/users/records', data, pbToken)
+
+    const authData = await pbPOST('/api/collections/users/auth-with-password', {
+      identity: formObject.email,
+      password: formObject.password
+    }, pbToken)
+
+    // console.log(authData)
+
+    if (!authData.ok) {
+      return new Response('<p class="fadeOut">Authentication failed</p>', { status: 400, headers })
     }
-  
-    cookies.set('token', authData.token, { httpOnly: false });
-  
+
+    cookies.set('pbToken', authData.data.token, { httpOnly: false, path: '/' })
+
+    headers['HX-Location'] = '/account'
+
     return new Response(
-      `<pre>${JSON.stringify({record, authData}, null, 2)}</pre>`, { status: 200, headers });
+      '<p class="fadeOut">Registration successful</p>', { status: 200, headers });
   } catch (error: any) {
     return new Response(
-      `<p>${error.message}</p>`, { status: 400, headers });
+      `<p class="fadeOut">${error.message}</p>`, { status: 400, headers });
   }
 }

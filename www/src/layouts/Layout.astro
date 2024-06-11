@@ -7,7 +7,7 @@ interface Props {
 
 const { title } = Astro.props;
 
-const isLoggedIn = pb.authStore.isValid;
+const isLoggedIn = Astro.cookies.get('pbToken') !== undefined;
 
 ---
 
@@ -30,10 +30,10 @@ const isLoggedIn = pb.authStore.isValid;
           <li class="mx-3"><a href="/groups">Groups</a></li>
           <li class="mx-3"><a href="/teams">Teams</a></li>
           {(!isLoggedIn) && (
-            <li class="ml-3"><a href="/auth/login">Log in</a></li>
+            <li><a href="/login">Log in</a></li>
           )}
           {(isLoggedIn) && (
-            <li class="ml-3"><a href="/auth/account">Account</a></li>
+            <li><a href="/account">Account</a></li>
           )}
         </ul>
       </nav>
@@ -70,6 +70,15 @@ const isLoggedIn = pb.authStore.isValid;
   input[type="number"],input[type="text"],input[type="email"],input[type="password"] {
     @apply py-1 bg-slate-600 border-2 border-transparent rounded-md focus:border-purple-400 ring-0 outline-none;
   }
+  h1 {
+    @apply text-5xl mb-5 text-center;
+  }
+  h2 {
+    @apply text-3xl mb-4 font-bold;
+  }
+  h3 {
+    @apply text-2xl mb-3 font-bold;
+  }
 	code {
 		font-family:
 			Menlo,
@@ -103,6 +112,15 @@ const isLoggedIn = pb.authStore.isValid;
   summary {
     cursor: pointer;
     user-select: none;
+  }
+  @keyframes fadeOut {
+    0% { opacity: .6; }
+    5% { opacity: 1; }
+    50% { opacity: 1; }
+    100% { opacity: .6; }
+  }
+  .fadeOut {
+    animation: fadeOut 2s forwards;
   }
 </style>
 

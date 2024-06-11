@@ -3,7 +3,7 @@ import Layout from '@/layouts/Layout.astro'
 import GroupItem from '@/components/GroupItem.astro'
 import { pb } from '@/services/pocketbase'
 
-export const prerender = true
+export const prerender = false
 
 const records = await pb.collection("groups").getFullList({
   expand: "team_1,team_2,team_3,team_4",

@@ -48,7 +48,7 @@ const betRecord = !isLoggedIn ? null : await pb.collection("bets").getList(1, 1,
 
   {!isLoggedIn && (
     <p>
-      You need to be <a href="/auth/login">logged in</a> to place bets.
+      You need to be <a href="/login">logged in</a> to place bets.
     </p>
   )}
   {(isLoggedIn && !betRecord) && (
