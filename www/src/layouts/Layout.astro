@@ -12,7 +12,7 @@ const isLoggedIn = pb.authStore.isValid;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" class="bg-slate-800 text-white min-h-screen">
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="description" content="Astro description" />
@@ -23,22 +23,24 @@ const isLoggedIn = pb.authStore.isValid;
 	</head>
 	<body>
     {(isLoggedIn) && (
-      <nav>
-        <ul>
-          <li><a href="/">Home</a></li>
-          <li><a href="/games">Games</a></li>
-          <li><a href="/groups">Groups</a></li>
-          <li><a href="/teams">Teams</a></li>
+      <nav class="container mx-auto p-5 lg:px-8">
+        <ul class="flex">
+          <li class="mr-3"><a href="/">Home</a></li>
+          <li class="mx-3"><a href="/games">Games</a></li>
+          <li class="mx-3"><a href="/groups">Groups</a></li>
+          <li class="mx-3"><a href="/teams">Teams</a></li>
           {(!isLoggedIn) && (
-            <li><a href="/auth/login">Log in</a></li>
+            <li class="ml-3"><a href="/auth/login">Log in</a></li>
           )}
           {(isLoggedIn) && (
-            <li><a href="/auth/account">Account</a></li>
+            <li class="ml-3"><a href="/auth/account">Account</a></li>
           )}
         </ul>
       </nav>
     )}
-		<slot />
+    <div class="container mx-auto">
+      <slot />
+    </div>
 	</body>
 </html>
 <style is:global>
@@ -57,10 +59,14 @@ const isLoggedIn = pb.authStore.isValid;
 	}
 	html {
 		font-family: system-ui, sans-serif;
-		background: var(--background);
-		background-size: 224px;
-    color: white;
 	}
+
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
   input[type="number"],input[type="text"],input[type="email"],input[type="password"] {
     @apply py-1 bg-slate-600 border-2 border-transparent rounded-md focus:border-purple-400 ring-0 outline-none;
   }
@@ -75,16 +81,6 @@ const isLoggedIn = pb.authStore.isValid;
 			Courier New,
 			monospace;
 	}
-  nav {
-    padding: 1rem;
-    ul {
-      display: flex;
-      gap: 1rem;
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-  }
   a {
     text-decoration: underline;
     color: rgb(var(--accent-light));
