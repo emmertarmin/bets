@@ -27,8 +27,6 @@ const isLoggedIn = Astro.cookies.get('pbToken') !== undefined;
         <ul class="flex">
           <li class="mr-3"><a href="/">Home</a></li>
           <li class="mx-3"><a href="/games">Games</a></li>
-          <li class="mx-3"><a href="/groups">Groups</a></li>
-          <li class="mx-3"><a href="/teams">Teams</a></li>
           {(!isLoggedIn) && (
             <li><a href="/login">Log in</a></li>
           )}
