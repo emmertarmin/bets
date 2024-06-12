@@ -11,7 +11,7 @@ const currentUser = await pbGET(
 
 const users = await pbGET(
   "/api/collections/users/records", {}, Astro.cookies.get("pbToken")?.value,
-).then((res) => res.data.items.toSorted((a, b) => ((b.points - a.points) || (a.username.localeCompare(b.username)))));
+).then((res) => res.data.items.toSorted((a: any, b: any) => ((b.points - a.points) || (a.username.localeCompare(b.username)))));
 
 
 ---
@@ -29,7 +29,7 @@ const users = await pbGET(
       </thead>
       <tbody>
         {users.map((user: any, index: number) => (
-          <tr key={user.id} class={user.id === currentUser.id ? "text-purple-400 bg-slate-900 font-bold" : ""}>
+          <tr class={user.id === currentUser.id ? "text-purple-400 bg-slate-900 font-bold" : ""}>
             <td title={user.email}>{user.username} {(index === 0 && user.points > 0) && '🏆'}</td>
             <td>{user.points}</td>
           </tr>

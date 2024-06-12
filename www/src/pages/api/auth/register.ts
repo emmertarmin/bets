@@ -1,4 +1,4 @@
-import { pb, pbPOST } from "@/services/pocketbase";
+import { pbPOST } from "@/services/pocketbase";
 
 export async function POST({ request, cookies }: any) {
 
