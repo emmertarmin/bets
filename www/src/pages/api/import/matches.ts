@@ -6,7 +6,7 @@ import type { APIContext } from 'astro';
 
 interface Team {
   name: string;
-  tla: string;
+  country_code_3: string;
   crest: string;
   id: number;
 }
@@ -33,32 +33,33 @@ interface Competition {
 }
 
 const pb_status: any[] = [];
+const headers: any = { "Content-Type": "application/json" };
 
 async function check_team(team: Team) {
   let record: any = team;
   // create data
   const data = new FormData();
     data.set('name', team.name);
-    data.set('code', team.tla);
+    data.set('country_code_3', team.tla.toLowerCase());
   if (team.crest.length > 0) {
     data.set('crest', team.tla.toLowerCase() + '.' + team.crest.split('.').pop());
   }
   // console.log("team data:", data);
   try {
     // check if team exists
-    record = await pb.collection('teams').getFirstListItem(`code="${team.tla}"`);
+    record = await pb.collection('teams').getFirstListItem(`country_code_3="${team.tla.toLowerCase()}"`);
     // console.log("Existing record: ", record);
     /* do nothing
     const updRecord = await pb.collection('teams').update(record.id, data);
-    pb_status.push({ type: "team", code: team.tla, status: 'updated', date: updRecord.updated });
-    // console.log("Updated record: ", updRecord);
+    pb_status.push({ type: "team", code: updRecord.country_code_3, status: 'updated', date: updRecord.updated });
     */
+    // console.log("Updated record: ", updRecord);
   } catch (err: any) {
     // team doest not exists, try to create
     // console.dir(err);
-    if (!(err.status && err.status == "404")) return new Response(JSON.stringify(err));
+    if (!(err.status && err.status == "404")) return new Response(JSON.stringify(err), { headers: headers });
     record = await pb.collection('teams').create(data);
-    pb_status.push({ type: "team", code: record.tla, status: 'created', date: record.created });
+    pb_status.push({ type: "team", code: record.country_code_3, status: 'created', date: record.created });
     // console.log("New record:", newRecord);
   }
   return record;
@@ -67,14 +68,14 @@ async function check_team(team: Team) {
 export async function GET({ request }: APIContext) {
 
   const query_params = new URL(request.url).searchParams;
-  console.log("Request params:", query_params);
-  /*
-  // maybe admin authentication is needed
-  const adminAuthData = await pb.admins.authWithPassword(
-    query_params.user,
-    query_params.password
-  );
-  */
+  // console.log("Request params:", query_params);
+
+  // authenticate with token first
+  pb.authStore.loadFromCookie(request.headers.get('cookie') || '');
+  if (!pb.authStore.isValid) {
+    const response = JSON.stringify({message:"Unauthorized"});
+    return new Response(response, { status: 401, headers: headers });
+  }
 
   const matches: any[] = json_data.matches;
   const competitionData: Competition = json_data.competition;
@@ -86,7 +87,7 @@ export async function GET({ request }: APIContext) {
   } catch (err: any) {
     // competition does not exist, try to create
     //console.dir(err);
-    if (!(err.status && err.status == "404")) return new Response(JSON.stringify(err));
+    if (!(err.status && err.status == "404")) return new Response(JSON.stringify(err), { headers: headers });
     const data = new FormData();
       data.set('name', competitionData.name);
       data.set('code', competitionData.code);
@@ -98,21 +99,26 @@ export async function GET({ request }: APIContext) {
     pb_status.push({ type: "competition", fd_id: competition.fd_id, status: 'created', date: competition.created });
     // console.log("New competition:", competition);
   }
+  let i = 0;
   for(const match of matches) {
+    i++;
     const home_tla = match.homeTeam.tla;
     const away_tla = match.awayTeam.tla;
     const home_record = home_tla ? await check_team(match.homeTeam) : { id: null };
     const away_record = away_tla ? await check_team(match.awayTeam) : { id: null };
     const utc_date = new Date(Date.parse(match.utcDate));
+    const game_name = home_tla ? home_tla.toUpperCase() + ' v ' + away_tla.toUpperCase() : '';
     // create data
     const matchData = new FormData();
-      matchData.set('utc_date', utc_date.toISOString());
+      matchData.set('num', i.toString());
+      matchData.set('name', game_name)
+      matchData.set('date', utc_date.toISOString());
       matchData.set('status', match.status);
       matchData.set('stage', match.stage);
       matchData.set('group', match.group || '');
       matchData.set('duration', match.score.duration);
-      matchData.set('team_home', home_record instanceof FormData ? home_record.get('id')?.toString() || '' : '');
-      matchData.set('team_away', away_record instanceof FormData ? away_record.get('id')?.toString() || '' : '');
+      matchData.set('team_1', home_record.id?.toString() || '');
+      matchData.set('team_2', away_record.id?.toString() || '');
       matchData.set('competition', competition.id);
       matchData.set('fd_id', match.id.toString());
     // clear group if null
@@ -121,29 +127,31 @@ export async function GET({ request }: APIContext) {
     }
     // clear teams if null
     if (!home_tla) {
-      matchData.delete('team_home');
-      matchData.delete('team_away');
+      matchData.delete('name');
+      matchData.delete('team_1');
+      matchData.delete('team_2');
     }
     // console.log("match data:", matchData);
     try {
       // check if match exists, then update
-      const record = await pb.collection('matches').getFirstListItem(`fd_id="${match.id}"`);
+      const record = await pb.collection('games').getFirstListItem(`fd_id="${match.id}"`);
+      // const record = await pb.collection('games').getFirstListItem(`name="${game_name}"`);
       // console.log("Existing record:", record);
-      const updRecord = await pb.collection('matches').update(record.id, matchData);
-      pb_status.push({ type: "match", fd_id: updRecord.fd_id, status: 'updated', date: updRecord.updated });
+      const updRecord = await pb.collection('games').update(record.id, matchData);
+      pb_status.push({ type: "game", fd_id: updRecord.fd_id, status: 'updated', date: updRecord.updated });
       // console.log("Updated record:", updRecord);
     } catch (err: any) {
       // match does not exist, try to create
       // console.dir(err);
-      if (!(err.status && err.status == "404")) return new Response(JSON.stringify(err));
-      const newRecord = await pb.collection('matches').create(matchData);
-      pb_status.push({ type: "match", fd_id: newRecord.fd_id, status: 'created', date: newRecord.created });
+      if (!(err.status && err.status == "404")) return new Response(JSON.stringify(err), { headers: headers });
+      const newRecord = await pb.collection('games').create(matchData);
+      pb_status.push({ type: "game", fd_id: newRecord.fd_id, status: 'created', date: newRecord.created });
       // console.log("New record:", newRecord);
     }
   }
 
   const body = JSON.stringify(pb_status); // body must be a string
 
-  return new Response(body);
+  return new Response(body, { headers: headers });
 
 };

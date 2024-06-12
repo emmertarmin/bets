@@ -1,0 +1,118 @@
+---
+
+interface Props {
+	title: string;
+}
+
+const { title } = Astro.props;
+
+---
+
+<!doctype html>
+<html lang="en" class="bg-slate-800 text-white min-h-screen">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="description" content="Astro description" />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="generator" content={Astro.generator} />
+		<title>{title}</title>
+	</head>
+	<body>
+    <div class="container">
+      <slot />
+    </div>
+	</body>
+</html>
+<style is:global>
+	:root {
+		--accent: 136, 58, 234;
+		--accent-light: 224, 204, 250;
+		--accent-dark: 49, 10, 101;
+		--accent-gradient: linear-gradient(
+			45deg,
+			rgb(var(--accent)),
+			rgb(var(--accent-light)) 30%,
+			white 60%
+		);
+    --background: #13151a;
+    --background-light: #1e2025;
+	}
+	html {
+		font-family: system-ui, sans-serif;
+	}
+
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  input[type="number"],input[type="text"],input[type="email"],input[type="password"] {
+    @apply py-1 bg-slate-600 border-2 border-transparent rounded-md focus:border-purple-400 ring-0 outline-none;
+  }
+  h1 {
+    @apply text-5xl mb-5 text-center;
+  }
+  h2 {
+    @apply text-3xl mb-4 font-bold;
+  }
+  h3 {
+    @apply text-2xl mb-3 font-bold;
+  }
+	code {
+		font-family:
+			Menlo,
+			Monaco,
+			Lucida Console,
+			Liberation Mono,
+			DejaVu Sans Mono,
+			Bitstream Vera Sans Mono,
+			Courier New,
+			monospace;
+	}
+  a {
+    text-decoration: underline;
+    color: rgb(var(--accent-light));
+    &:hover {
+      text-decoration: none;
+    }
+  }
+  blockquote {
+    background: var(--background-light);
+    padding: 1rem;
+    border-left: 0.25rem solid rgb(var(--accent));
+    margin: 1rem 0;
+  }
+  details {
+    margin: 1rem 0;
+    padding: 1rem;
+    background: var(--background-light);
+    border-radius: 0.5rem;
+  }
+  summary {
+    cursor: pointer;
+    user-select: none;
+  }
+  @keyframes fadeOut {
+    0% { opacity: .6; }
+    5% { opacity: 1; }
+    50% { opacity: 1; }
+    100% { opacity: .6; }
+  }
+  .fadeOut {
+    animation: fadeOut 2s forwards;
+  }
+</style>
+
+<script is:inline>
+document.body.addEventListener('htmx:beforeOnLoad', function (evt) {
+  if (evt.detail.xhr.status === 400) {
+    // allow 400 responses to swap as we are using this as a signal that
+    // a form was submitted with bad data and want to rerender with the
+    // error messages
+    evt.detail.shouldSwap = true;
+    evt.detail.isError = false;
+    }
+  });
+</script>
