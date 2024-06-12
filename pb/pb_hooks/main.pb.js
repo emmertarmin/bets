@@ -1,6 +1,5 @@
-/* eslint-disable no-undef */
 onModelAfterUpdate((e) => {
-  if (e.model.get('played')) {
+  if (e.model.get('status') === 'FINISHED') {
     const gameId = e.model.get('id')
     const home = e.model.get('team_1_score')
     const away = e.model.get('team_2_score')
