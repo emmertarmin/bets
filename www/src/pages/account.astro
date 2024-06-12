@@ -17,11 +17,18 @@ if (!userData?.id) {
   Astro.redirect('/login', 303)
 }
 
+if (Astro.request.method === "DELETE") {
+  Astro.cookies.delete('pbToken');
+  const headers: any = { "Content-Type": "text/html" };
+  headers['HX-Location'] = '/login';
+  return new Response('', { status: 200, headers });
+}
+
 ---
 
 <Layout title="Account">
   <h1>Account</h1>
   <pre>{JSON.stringify({userData}, null, 2)}</pre>
 
-   <button hx-post="/api/auth/logout" hx-trigger="click" hx-swap="none">Logout</button>
+   <button hx-delete hx-trigger="click" hx-swap="none">Logout</button>
 </Layout>
