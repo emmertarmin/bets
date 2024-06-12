@@ -1,116 +1,46 @@
 ---
 import Layout from "@/layouts/Layout.astro"
-import { pb } from "@/services/pocketbase"
+import { pbGET } from "@/services/pocketbase"
+import GameCard from "@/components/GameCard.astro"
 
 export const prerender = false
 
-const games = await pb.collection('games').getFullList({
+const pbToken = Astro.cookies.get('pbToken')?.value
+
+const userData = await pbGET('/api/collections/users/records', {
+  page: 1,
+  perPage: 1
+}, pbToken)
+  .then(res => res.data.items[0])
+
+const games = await pbGET('/api/collections/games/records', {
   sort: 'date',
   expand: 'team_1,team_2',
-})
-const bets = await pb.collection("bets").getFullList({filter: `user="${pb.authStore.model?.id}"`});
+}, pbToken)
+  .then(res => res.data.items)
+
+const bets = await pbGET('/api/collections/bets/records', {
+  filter: `user="${userData.id}"`
+}, pbToken)
+  .then(res => res.data.items)
 ---
 
 <Layout title="Games">
   <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 lg:gap-8 px-5 lg:px-8">
-    {games.map((game) => {
-      const bet = bets.find(bet => bet.game === game.id)
+    {games.map((game: any) => {
+      const bet = bets.find((bet: any) => bet.game === game.id)
       return (
-      <div class="relative border border-slate-500 hover:border-purple-600 rounded-xl p-4 bg-slate-900 hover:transition-all">
-        {/* <p class="text-sm text-slate-300 text-center mb-2">match.type</p> */}
-        <p class="text-sm text-slate-300 text-center mb-2">{game.date.substring(0,10)} {new Date(game.date).toISOString().substring(11, 16)}</p>
-        <div class="game text-center text-sm text-slate-300 mb-2" data-date={game.date}></div>
-        { !bet && (
-          <form hx-post="/api/bets" id={`bet-create-form-${game.id}`} hx-target={`#bet-create-form-${game.id}-result`}>
-            <div class="flex items-center">
-              <div class="mr-4">{game.expand?.team_1.country_code_3.toUpperCase()}</div>
-              <div>
-                <input
-                  type="number" class="text-4xl text-center w-full"
-                  name="team_1_score_bet"
-                />
-              </div>
-              <div class="px-3">:</div>
-              <div>
-                <input
-                  type="number" class="text-4xl text-center w-full"
-                  name="team_2_score_bet"
-                />
-              </div>
-              <div class="ml-4">{game.expand?.team_2.country_code_3.toUpperCase()}</div>
-            </div>
-            <input type="hidden" name="gameID" value={game.id} />
-            <div id={`bet-create-form-${game.id}-result`} class="absolute left-3 bottom-3"></div>
-            <button type="submit" class="absolute right-3 bottom-3 rounded-full w-10 h-10 bg-purple-900 text-white px-4 py-2 flex items-center justify-center">&check;</button>
-          </form>
-        )}
-        { bet && (
-          <form hx-put="/api/bets" id={`bet-update-form-${game.id}`} hx-target={`#bet-update-form-${game.id}-result`}>
-            <div class="flex items-center">
-              <div class="mr-4">{game.expand?.team_1.country_code_3.toUpperCase()}</div>
-              <div>
-                <input
-                  type="number" class="text-4xl text-center w-full"
-                  name="team_1_score_bet"
-                  value={bet.team_1_score_bet}
-                />
-              </div>
-              <div class="px-3">:</div>
-              <div>
-                <input
-                  type="number" class="text-4xl text-center w-full"
-                  name="team_2_score_bet"
-                  value={bet.team_2_score_bet}
-                />
-              </div>
-              <div class="ml-4">{game.expand?.team_2.country_code_3.toUpperCase()}</div>
-            </div>
-            <input type="hidden" name="gameID" value={game.id} />
-            <input type="hidden" name="betID" value={bet.id} />
-            <div id={`bet-update-form-${game.id}-result`} class="absolute left-3 bottom-3"></div>
-            <button type="submit" class="absolute right-3 bottom-3 rounded-full w-10 h-10 bg-purple-900 text-white px-4 py-2 flex items-center justify-center d-none">&check;</button>
-          </form>
-        )}
-      {(game.team_1_score || game.team_2_score)
-        ? (
-          <div class="flex items-center justify-center mt-4">
-            <div class="text-2xl px-3">{game.team_1_score}</div><div class="px-3">:</div><div class="text-2xl px-3">{game.team_2_score}</div>
-            {bet?.points && (
-            <div class="absolute top-3 right-3 text-2xl bg-purple-900 rounded-full w-10 h-10 flex items-center justify-center">{bet?.points}</div>
-            )}
-          </div>
-          )
-        : <div class="h-8 mt-4" />}
-    </div>
+        <GameCard
+          gameID={game.id}
+          teams={`${game.expand?.team_1.country_code_3}:${game.expand?.team_2.country_code_3}`}
+          bets={`${bet?.team_1_score_bet}:${bet?.team_2_score_bet}`}
+          betID={bet?.id}
+          results={`${5}:${5}`}
+          gameDate={new Date(game.date).toISOString()}
+        />
     )
     })}
   </div>
   <!-- <pre>{JSON.stringify(games, null, 2)}</pre> -->
   <!-- <pre>{JSON.stringify(bets, null, 2)}</pre> -->
 </Layout>
-
-
-<script>
-  const games = document.querySelectorAll('.game')
-  const zeropad = (n: number) => n < 10 ? `0${n}` : n
-  function updateTimes() {
-    const now = new Date()
-    games.forEach(game => {
-      const date = new Date(game.getAttribute('data-date') as string)
-      const diff = date.getTime() - now.getTime()
-      if (diff < 0) return game.innerHTML = 'Finished'
-      const minutes = Math.floor(diff / 60000)
-      const hours = Math.floor(minutes / 60)
-      const days = Math.floor(hours / 24)
-      const hoursLeft = hours - (days * 24)
-      const minutesLeft = minutes - (hours * 60)
-      const secondsLeft = Math.floor((diff / 1000) % 60)
-      if (days > 3) game.innerHTML = ''
-      else if (date.toISOString().substring(0, 10) === now.toISOString().substring(0, 10)) game.innerHTML = `${zeropad(hoursLeft)}:${zeropad(minutesLeft)}:${zeropad(secondsLeft)}`
-      else if (diff > 0) game.innerHTML = date.toLocaleString('en-us', {  weekday: 'long' })
-      else game.innerHTML = '-'
-    })
-  }
-  updateTimes()
-  setInterval(updateTimes, 1000)
-</script>

@@ -1,0 +1,144 @@
+---
+const { gameID, teams, bets, betID, results, gameDate } = Astro.props;
+---
+
+<div
+    class="relative border border-slate-500 hover:border-purple-600 rounded-xl p-4 bg-slate-900 hover:transition-all"
+    id={`game-card-${gameID}`}
+>
+    {/* <p class="text-sm text-slate-300 text-center mb-2">match.type</p> */}
+    <p class="text-sm text-slate-300 text-center mb-2">
+        {gameDate.substring(0, 10)}
+        {new Date(gameDate).toISOString().substring(11, 16)}
+    </p>
+    <div
+        class="game text-center text-sm text-slate-300 mb-2"
+        data-date={gameDate}
+    >
+    </div>
+    {
+        !betID && (
+            <form
+                hx-post={`/partials/games/${gameID}`}
+                hx-target={`#game-card-${gameID}`}
+                hx-swap="outerHTML"
+                data-game-id={gameID}
+                data-bet-id={betID}
+            >
+                <input type="hidden" name="gameID" value={gameID} />
+                <input type="hidden" name="teams" value={teams} />
+                <input type="hidden" name="bets" value={bets} />
+                <input type="hidden" name="bets" value={bets} />
+                <input type="hidden" name="betID" value={betID} />
+                <input type="hidden" name="results" value={results} />
+                <input type="hidden" name="gameDate" value={gameDate} />
+                <div class="flex items-center">
+                    <div class="mr-4">{(teams.split(':')[0] || '').toUpperCase()}</div>
+                    <div>
+                        <input
+                            type="number"
+                            class="text-4xl text-center w-full"
+                            name="team_1_score_bet"
+                            value={bets?.split(":")[0] || ""}
+                        />
+                    </div>
+                    <div class="px-3">:</div>
+                    <div>
+                        <input
+                            type="number"
+                            class="text-4xl text-center w-full"
+                            name="team_2_score_bet"
+                            value={bets?.split(":")[1] || ""}
+                        />
+                    </div>
+                    <div class="ml-4">{(teams.split(':')[1] || '').toUpperCase()}</div>
+                </div>
+                <input type="hidden" name="gameID" value={gameID} />
+                <div
+                    id={`bet-create-form-${gameID}-result`}
+                    class="absolute left-3 bottom-3"
+                ></div>
+                <button
+                    type="submit"
+                    class="absolute right-3 bottom-3 rounded-full w-10 h-10 bg-purple-900 text-white px-4 py-2 flex items-center justify-center"
+                >
+                    &check;
+                </button>
+            </form>
+        )
+    }
+    {
+        betID && (
+            <form
+                hx-post={`/partials/games/${gameID}`}
+                hx-target={`#game-card-${gameID}`}
+                hx-swap="outerHTML"
+                data-game-id={gameID}
+                data-bet-id={betID}
+            >
+                <input type="hidden" name="gameID" value={gameID} />
+                <input type="hidden" name="teams" value={teams} />
+                <input type="hidden" name="bets" value={bets} />
+                <input type="hidden" name="bets" value={bets} />
+                <input type="hidden" name="betID" value={betID} />
+                <input type="hidden" name="results" value={results} />
+                <input type="hidden" name="gameDate" value={gameDate} />
+                <div class="flex items-center">
+                    <div class="mr-4">
+                        {(teams.split(':')[0] || '').toUpperCase()}
+                    </div>
+                    <div>
+                        <input
+                            type="number"
+                            class="text-4xl text-center w-full"
+                            name="team_1_score_bet"
+                            value={bets?.split(':')[0] || ''}
+                        />
+                    </div>
+                    <div class="px-3">:</div>
+                    <div>
+                        <input
+                            type="number"
+                            class="text-4xl text-center w-full"
+                            name="team_2_score_bet"
+                            value={bets?.split(':')[1] || ''}
+                        />
+                    </div>
+                    <div class="ml-4">
+                        {(teams.split(':')[1] || '').toUpperCase()}
+                    </div>
+                </div>
+                <input type="hidden" name="gameID" value={gameID} />
+                <input type="hidden" name="betID" value={betID} />
+                <div
+                    id={`bet-update-form-${gameID}-result`}
+                    class="absolute left-3 bottom-3"
+                />
+                <button
+                    type="submit"
+                    class="absolute right-3 bottom-3 rounded-full w-10 h-10 bg-purple-900 text-white px-4 py-2 flex items-center justify-center d-none"
+                >
+                    &check;
+                </button>
+            </form>
+        )
+    }
+    {
+        results ? (
+            <div class="flex items-center justify-center mt-4">
+                <>
+                    <div class="text-2xl px-3">{results.split(':')[0]}</div>
+                    <div class="px-3">:</div>
+                    <div class="text-2xl px-3">{results.split(':')[1]}</div>
+                </>
+                {/* {betID?.points && (
+                    <div class="absolute top-3 right-3 text-2xl bg-purple-900 rounded-full w-10 h-10 flex items-center justify-center">
+                        {bet?.points}
+                    </div>
+                )} */}
+            </div>
+        ) : (
+            <div class="h-8 mt-4" />
+        )
+    }
+</div>

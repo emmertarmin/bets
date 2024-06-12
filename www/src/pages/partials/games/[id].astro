@@ -1,0 +1,60 @@
+---
+
+import GameCard from '@/components/GameCard.astro'
+import { pbGET } from '@/services/pocketbase'
+import { pbPOST } from '@/services/pocketbase'
+import { pbPATCH } from '@/services/pocketbase'
+
+let props: any = {}
+
+const { id: gameID } = Astro.params as { id: string };
+
+if (Astro.request.method === "POST") {
+  try {
+    const pbToken = Astro.cookies.get('pbToken')?.value
+
+    const formData = await Astro.request.formData()
+    const formObject: any = {}
+    for (const key of formData.keys()) {
+        formObject[key] = formData.get(key)
+    }
+
+    if (formObject.betID) {
+        await pbPATCH(`/api/collections/bets/records/${formObject.betID}`, {
+            team_1_score_bet: formObject.team_1_score_bet,
+            team_2_score_bet: formObject.team_2_score_bet
+        }, pbToken)
+    } else {
+        const userData = await pbGET('/api/collections/users/records', { page: 1, perPage: 1 }, pbToken)
+            .then(res => res.data.items[0])
+        await pbPOST(`/api/collections/bets/records/${formObject.betID}`, {
+            user: userData.id,
+            game: formObject.gameID,
+            team_1_score_bet: formObject.team_1_score_bet,
+            team_2_score_bet: formObject.team_2_score_bet
+        }, pbToken)
+    }
+
+    props = {
+        ...formObject,
+        bets: typeof formObject.team_1_score_bet !== 'undefined' && typeof formObject.team_2_score_bet !== 'undefined' ? `${formObject.team_1_score_bet}:${formObject.team_2_score_bet}` : null
+    }
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error(error.message)
+    }
+  }
+}
+
+const { teams, bets, betID, results, gameDate } = props as any
+
+---
+
+<GameCard
+    gameID={gameID}
+    teams={teams}
+    bets={bets}
+    betID={betID}
+    results={results}
+    gameDate={gameDate}
+/>

@@ -46,6 +46,13 @@ export const pbPUT = async (url: string, data: any, pbToken?: string) => {
   }, pbToken)
 }
 
+export const pbPATCH = async (url: string, data: any, pbToken?: string) => {
+  return await pbFetch(url, {
+    method: 'PATCH',
+    body: JSON.stringify(data)
+  }, pbToken)
+}
+
 export const pbDELETE = async (url: string, pbToken: string) => {
   return await pbFetch(url, { method: 'DELETE' }, pbToken)
 }
