@@ -25,5 +25,5 @@ export function getFlag(countryCode: string) {
     ['tur', "🇹🇷"],
     ['ukr', "🇺🇦"]
   ])
-  return flagMap.get(countryCode.toLocaleLowerCase())
+  return flagMap.get(countryCode.toLowerCase())
 }
