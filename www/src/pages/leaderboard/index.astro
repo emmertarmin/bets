@@ -1,0 +1,42 @@
+---
+import { pbGET } from "@/services/pocketbase";
+import Layout from "@/layouts/Layout.astro";
+
+const cookieParams = new URLSearchParams(Astro.cookies.get("pbToken")?.value);
+const userId = cookieParams.get("user");
+
+const currentUser = await pbGET(
+  `/api/collections/users/records/${userId}`, {}, Astro.cookies.get("pbToken")?.value,
+).then((res) => res.data);
+
+const users = await pbGET(
+  "/api/collections/users/records", {}, Astro.cookies.get("pbToken")?.value,
+).then((res) => res.data.items.toSorted((a, b) => ((b.points - a.points) || (a.username.localeCompare(b.username)))));
+
+
+---
+
+<Layout title="Leaderboard">
+  <h1>Leaderboard</h1>
+
+  <center>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Points</th>
+        </tr>
+      </thead>
+      <tbody>
+        {users.map((user: any, index: number) => (
+          <tr key={user.id} class={user.id === currentUser.id ? "text-purple-400 bg-slate-900 font-bold" : ""}>
+            <td title={user.email}>{user.username} {(index === 0 && user.points > 0) && '🏆'}</td>
+            <td>{user.points}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </center>
+
+  <!-- <pre>{JSON.stringify({currentUser, users}, null, 2)}</pre> -->
+</Layout>

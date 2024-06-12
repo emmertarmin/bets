@@ -9,7 +9,11 @@ export const pbFetch = async (url: string, options: any, pbToken?: string) => {
     'Content-Type': 'application/json',
     ...options.headers
   }
-  if (pbToken) headers['Authorization'] = `Bearer ${pbToken}`
+  if (pbToken) {
+    const cookieParams = new URLSearchParams(pbToken)
+    const token = cookieParams.get('token')
+    headers['Authorization'] = `Bearer ${token}`
+  }
 
   const response = await fetch('https://bets.emmert.hu/pb/' + url, {
     ...options,

@@ -1,4 +1,6 @@
 ---
+import { getFlag } from "@/utils";
+
 const { gameID, teams, bets, betID, results, gameDate } = Astro.props;
 ---
 
@@ -33,7 +35,11 @@ const { gameID, teams, bets, betID, results, gameDate } = Astro.props;
                 <input type="hidden" name="results" value={results} />
                 <input type="hidden" name="gameDate" value={gameDate} />
                 <div class="flex items-center">
-                    <div class="mr-4">{(teams.split(':')[0] || '').toUpperCase()}</div>
+                    <div class="mr-4 text-center">
+                      {getFlag(teams.split(':')[0] || '')}
+                      <br/>
+                      {(teams.split(':')[0] || '').toUpperCase()}
+                      </div>
                     <div>
                         <input
                             type="number"
@@ -51,7 +57,11 @@ const { gameID, teams, bets, betID, results, gameDate } = Astro.props;
                             value={bets?.split(":")[1] || ""}
                         />
                     </div>
-                    <div class="ml-4">{(teams.split(':')[1] || '').toUpperCase()}</div>
+                    <div class="ml-4 text-center">
+                      {getFlag(teams.split(':')[1] || '')}
+                      <br/>
+                      {(teams.split(':')[1] || '').toUpperCase()}
+                    </div>
                 </div>
                 <input type="hidden" name="gameID" value={gameID} />
                 <div
@@ -84,8 +94,10 @@ const { gameID, teams, bets, betID, results, gameDate } = Astro.props;
                 <input type="hidden" name="results" value={results} />
                 <input type="hidden" name="gameDate" value={gameDate} />
                 <div class="flex items-center">
-                    <div class="mr-4">
-                        {(teams.split(':')[0] || '').toUpperCase()}
+                    <div class="mr-4 text-center">
+                      {getFlag(teams.split(':')[0] || '')}
+                      <br/>
+                      {(teams.split(':')[0] || '').toUpperCase()}
                     </div>
                     <div>
                         <input
@@ -104,8 +116,10 @@ const { gameID, teams, bets, betID, results, gameDate } = Astro.props;
                             value={bets?.split(':')[1] || ''}
                         />
                     </div>
-                    <div class="ml-4">
-                        {(teams.split(':')[1] || '').toUpperCase()}
+                    <div class="ml-4 text-center">
+                      {getFlag(teams.split(':')[1] || '')}
+                      <br/>
+                      {(teams.split(':')[1] || '').toUpperCase()}
                     </div>
                 </div>
                 <input type="hidden" name="gameID" value={gameID} />

@@ -24,7 +24,17 @@ import Layout from "@/layouts/Layout.astro";
         />
       </div>
       <div class="mb-4 w-full">
-        <label for="password" class="block text-sm text-slate-300">Password</label>
+        <label for="username" class="block text-sm text-slate-300">Username (for leaderboard)</label>
+        <input
+          type="text"
+          id="username"
+          name="username"
+          required
+          class="mt-1 p-2 w-full bg-transparent border border-slate-400 rounded-md"
+        />
+      </div>
+      <div class="mb-4 w-full">
+        <label for="password" class="block text-sm text-slate-300">Password (min. 5 characters)</label>
         <input
           type="password"
           id="password"

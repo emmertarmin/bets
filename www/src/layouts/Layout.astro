@@ -25,13 +25,14 @@ const isLoggedIn = Astro.cookies.get('pbToken') !== undefined;
     {(isLoggedIn) && (
       <nav class="container p-5 lg:px-8">
         <ul class="flex">
-          <li class="mr-3"><a href="/">Home</a></li>
+          {/* <li class="mr-3"><a href="/">Home</a></li> */}
           <li class="mx-3"><a href="/games">Games</a></li>
+          <li class="mx-3"><a href="/leaderboard">Leaderboard</a></li>
           {(!isLoggedIn) && (
-            <li><a href="/login">Log in</a></li>
+            <li class="mx-3"><a href="/login">Log in</a></li>
           )}
           {(isLoggedIn) && (
-            <li><a href="/account">Account</a></li>
+            <li class="mx-3"><a href="/account">Account</a></li>
           )}
         </ul>
       </nav>
@@ -124,6 +125,16 @@ const isLoggedIn = Astro.cookies.get('pbToken') !== undefined;
     display: block;
     padding: .5rem;
     opacity: .5;
+  }
+  table {
+    border-collapse: collapse;
+    margin: 4px;
+    & td, th {
+      padding: .5rem;
+    }
+    & td {
+      border: 1px solid rgb(var(--accent-light)) !important;
+    }
   }
 </style>
 

@@ -1,9 +1,7 @@
 import { pb, pbPOST } from "@/services/pocketbase";
 
-export const prerender = false;
-
 export async function POST({ request, cookies }: any) {
-  const pbToken = cookies.get('pbToken')?.value
+
   const headers: any = { "Content-Type": "text/html" };
 
   const formData = await request.formData()
@@ -15,6 +13,10 @@ export async function POST({ request, cookies }: any) {
 
   if (!formObject.email) {
     return new Response('<p class="fadeOut">Email is required</p>', { status: 400, headers });
+  }
+
+  if (!formObject.username) {
+    return new Response('<p class="fadeOut">Name is required</p>', { status: 400, headers });
   }
 
   if (!formObject.password) {
@@ -31,16 +33,20 @@ export async function POST({ request, cookies }: any) {
 
   const data = {
     ...formObject,
-    username: formObject.email.split('@')[0],
+    username: formObject.username || formObject.email.split('@')[0],
     emailVisibility: true
   }
   try {
-    const record = await pbPOST('/api/collections/users/records', data, pbToken)
+    const record = await pbPOST('/api/collections/users/records', data)
+
+    if (!record.ok) {
+      return new Response('<p class="fadeOut">Registration failed</p>', { status: 400, headers });
+    }
 
     const authData = await pbPOST('/api/collections/users/auth-with-password', {
       identity: formObject.email,
       password: formObject.password
-    }, pbToken)
+    })
 
     // console.log(authData)
 
@@ -48,7 +54,11 @@ export async function POST({ request, cookies }: any) {
       return new Response('<p class="fadeOut">Authentication failed</p>', { status: 400, headers })
     }
 
-    cookies.set('pbToken', authData.data.token, { httpOnly: false, path: '/' })
+    const cookieParams = new URLSearchParams()
+    cookieParams.set('token', authData.data.token)
+    cookieParams.set('user', authData.data.record.id)
+
+    cookies.set('pbToken', cookieParams.toString(), { httpOnly: false, path: '/' })
 
     headers['HX-Location'] = '/account'
 
