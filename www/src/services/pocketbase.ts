@@ -1,6 +1,6 @@
 import PocketBase from 'pocketbase'
 
-export const pb = new PocketBase('https://lab.emmert.hu/pb')
+export const pb = new PocketBase('https://bets.emmert.hu/pb')
 
 export const pbFetch = async (url: string, options: any, pbToken?: string) => {
   // prune leading slash
@@ -11,7 +11,7 @@ export const pbFetch = async (url: string, options: any, pbToken?: string) => {
   }
   if (pbToken) headers['Authorization'] = `Bearer ${pbToken}`
 
-  const response = await fetch('https://lab.emmert.hu/pb/' + url, {
+  const response = await fetch('https://bets.emmert.hu/pb/' + url, {
     ...options,
     headers
   })
