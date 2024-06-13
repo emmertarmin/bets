@@ -21,7 +21,7 @@ const isLoggedIn = Astro.cookies.get('pbToken') !== undefined;
 	</head>
 	<body>
     {(isLoggedIn) && (
-      <nav class="container p-5 lg:px-8">
+      <nav class="container p-5 lg:px-8 mx-auto">
         <ul class="flex">
           {/* <li class="mr-3"><a href="/">Home</a></li> */}
           <li class="mx-3"><a href="/games">Games</a></li>
@@ -35,7 +35,7 @@ const isLoggedIn = Astro.cookies.get('pbToken') !== undefined;
         </ul>
       </nav>
     )}
-    <div class="container">
+    <div class="container mx-auto">
       <slot />
     </div>
 	</body>

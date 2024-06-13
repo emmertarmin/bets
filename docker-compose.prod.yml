@@ -24,6 +24,8 @@ services:
       - 4321:4321
     depends_on:
       - pocketbase
+    environment:
+      - TZ=Europe/Berlin
   pocketbase:
     container_name: pocketbase
     build:
