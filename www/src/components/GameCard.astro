@@ -5,7 +5,7 @@ const { gameID, gameStatus, teams, bets, betID, betPoints, results, gameDate } =
 ---
 
 <div
-    class="relative border border-slate-500 hover:border-purple-600 rounded-xl p-4 bg-slate-900 hover:transition-all"
+    class={`game-card relative border border-slate-500 rounded-xl p-4 hover:transition-all ${gameStatus === 'FINISHED' ? 'bg-slate-800' : 'bg-slate-900 hover:border-purple-600'}`}
     id={`game-card-${gameID}`}
 >
     {/* <p class="text-sm text-slate-300 text-center mb-2">match.type</p> */}
@@ -35,7 +35,7 @@ const { gameID, gameStatus, teams, bets, betID, betPoints, results, gameDate } =
                 <input type="hidden" name="gameDate" value={gameDate} />
                 <div class="flex items-center">
                     <div class="mr-4 text-center">
-                      {getFlag(teams.split(':')[0] || '')}
+                      <span class="flag">{getFlag(teams.split(':')[0] || '')}</span>
                       <br/>
                       {(teams.split(':')[0] || '').toUpperCase()}
                       </div>
@@ -45,6 +45,7 @@ const { gameID, gameStatus, teams, bets, betID, betPoints, results, gameDate } =
                             class="text-4xl text-center w-full"
                             name="team_1_score_bet"
                             value={bets?.split(":")[0] || ""}
+                            disabled={gameStatus === 'FINISHED'}
                         />
                     </div>
                     <div class="px-3">:</div>
@@ -54,10 +55,11 @@ const { gameID, gameStatus, teams, bets, betID, betPoints, results, gameDate } =
                             class="text-4xl text-center w-full"
                             name="team_2_score_bet"
                             value={bets?.split(":")[1] || ""}
+                            disabled={gameStatus === 'FINISHED'}
                         />
                     </div>
                     <div class="ml-4 text-center">
-                      {getFlag(teams.split(':')[1] || '')}
+                      <span class="flag">{getFlag(teams.split(':')[1] || '')}</span>
                       <br/>
                       {(teams.split(':')[1] || '').toUpperCase()}
                     </div>
@@ -69,7 +71,7 @@ const { gameID, gameStatus, teams, bets, betID, betPoints, results, gameDate } =
                 ></div>
                 <button
                     type="submit"
-                    class="absolute right-3 bottom-3 rounded-full w-10 h-10 bg-purple-900 text-white px-4 py-2 flex items-center justify-center"
+                    class="opacity-0 transition-opacity absolute right-3 bottom-3 rounded-full w-10 h-10 bg-purple-900 text-white px-4 py-2 flex items-center justify-center"
                 >
                     &check;
                 </button>
@@ -94,7 +96,7 @@ const { gameID, gameStatus, teams, bets, betID, betPoints, results, gameDate } =
                 <input type="hidden" name="gameDate" value={gameDate} />
                 <div class="flex items-center">
                     <div class="mr-4 text-center">
-                      {getFlag(teams.split(':')[0] || '')}
+                      <span class="flag">{getFlag(teams.split(':')[0] || '')}</span>
                       <br/>
                       {(teams.split(':')[0] || '').toUpperCase()}
                     </div>
@@ -104,6 +106,7 @@ const { gameID, gameStatus, teams, bets, betID, betPoints, results, gameDate } =
                             class="text-4xl text-center w-full"
                             name="team_1_score_bet"
                             value={bets?.split(':')[0] || ''}
+                            disabled={gameStatus === 'FINISHED'}
                         />
                     </div>
                     <div class="px-3">:</div>
@@ -113,10 +116,11 @@ const { gameID, gameStatus, teams, bets, betID, betPoints, results, gameDate } =
                             class="text-4xl text-center w-full"
                             name="team_2_score_bet"
                             value={bets?.split(':')[1] || ''}
+                            disabled={gameStatus === 'FINISHED'}
                         />
                     </div>
                     <div class="ml-4 text-center">
-                      {getFlag(teams.split(':')[1] || '')}
+                      <span class="flag">{getFlag(teams.split(':')[1] || '')}</span>
                       <br/>
                       {(teams.split(':')[1] || '').toUpperCase()}
                     </div>
@@ -129,7 +133,7 @@ const { gameID, gameStatus, teams, bets, betID, betPoints, results, gameDate } =
                 />
                 <button
                     type="submit"
-                    class="absolute right-3 bottom-3 rounded-full w-10 h-10 bg-purple-900 text-white px-4 py-2 flex items-center justify-center d-none"
+                    class="opacity-0 transition-opacity absolute right-3 bottom-3 rounded-full w-10 h-10 bg-purple-900 text-white px-4 py-2 flex items-center justify-center"
                 >
                     &check;
                 </button>
@@ -156,3 +160,26 @@ const { gameID, gameStatus, teams, bets, betID, betPoints, results, gameDate } =
         </div>
     )}
 </div>
+
+<style>
+    .flag {
+        @apply text-3xl filter saturate-50 transition-all;
+    }
+    .game-card:hover .flag {
+        @apply filter saturate-100;
+    }
+</style>
+
+<script>
+    // Show submit button when input is changed
+    const inputs = document.querySelectorAll('input[name=team_1_score_bet],input[name=team_2_score_bet]')
+    inputs.forEach((input) => {
+        input.addEventListener('input', (e) => {
+            const form = (e?.target as HTMLElement)?.closest('form')
+            if (form) {
+                const submitButton = form.querySelector('button[type=submit')
+                submitButton?.classList.remove('opacity-0')
+            }
+        })
+    })
+</script>
