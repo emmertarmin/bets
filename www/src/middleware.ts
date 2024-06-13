@@ -4,6 +4,7 @@ export const onRequest = defineMiddleware((context, next) => {
   if (
     !/\/login\/?$/.test(context.url.pathname)
     && !/\/register\/?$/.test(context.url.pathname)
+    && !/\/import\/?$/.test(context.url.pathname)
     && !context.cookies.has('pbToken')
     && !context.request.headers.get('HX-Request')
   ) {

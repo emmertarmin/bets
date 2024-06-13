@@ -1,6 +1,6 @@
-// import PocketBase from 'pocketbase'
+import PocketBase from 'pocketbase'
 
-// export const pb = new PocketBase('https://bets.emmert.hu/pb')
+export const pb = new PocketBase('https://bets.emmert.hu/pb')
 
 export const pbFetch = async (url: string, options: any, pbToken?: string) => {
   // prune leading slash

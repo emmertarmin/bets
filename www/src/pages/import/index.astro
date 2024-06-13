@@ -9,7 +9,6 @@ if (!(Astro.cookies.has('pb_auth') && isAuthorizedAdmin(Astro.request.headers.ge
 }
 
 ---
-
 <Layout title='Import Dashboard'>
   <main class='h-screen w-screen flex pt-[10%] justify-center bg-gradient-to-r from-violet-900 to-slate-900 text-white'>
     <div class='flex flex-col items-center w-96'>
@@ -19,10 +18,57 @@ if (!(Astro.cookies.has('pb_auth') && isAuthorizedAdmin(Astro.request.headers.ge
         <div class='mb-10 mt-4' id="response">
             Choose from available Tasks
         </div>
-        <button type='submit' hx-get="/api/import/matches" hx-target="#response" class='bg-gradient-to-r from-purple-600 to-violet-900 hover:from-green-700 hover:to-lime-500 p-3 w-full rounded-md mt-3'>Import Scheduled Matches</button>
-        <button type='submit' hx-get="/api/import/scores" hx-target="#response" class='bg-gradient-to-r from-purple-600 to-violet-900 hover:from-green-700 hover:to-lime-500 p-3 w-full rounded-md mt-3'>Update Scores</button>
-        <button type='submit' hx-get="/api/import/flags" hx-target="#response" class='bg-gradient-to-r from-purple-600 to-violet-900 hover:from-green-700 hover:to-lime-500 p-3 w-full rounded-md mt-3'>Download Country flags</button>
-        <button type='submit' hx-get="/api/import/logout" hx-target="#response" class='bg-gradient-to-r from-violet-600 to-red-900 hover:from-red-600 hover:to-red-800 p-3 w-full rounded-md mt-10'>Logout</button>
+        <button type='submit' hx-get="/api/import/matches" hx-target="#response" class='bg-gradient-to-r from-purple-600 to-violet-900 hover:from-green-700 hover:to-lime-500 w-full rounded-md mt-3 h-12'>
+          <span class="loader htmx-indicator"></span><span class="htmx-indicator-txt">Import Scheduled Matches</span>
+        </button>
+        <button type='submit' hx-get="/api/import/scores" hx-target="#response" class='bg-gradient-to-r from-purple-600 to-violet-900 hover:from-green-700 hover:to-lime-500 w-full rounded-md mt-3 h-12'>
+          <span class="loader htmx-indicator"></span><span class="htmx-indicator-txt">Update Scores</span>
+        </button>
+        <button type='submit' hx-get="/api/import/flags" hx-target="#response" class='bg-gradient-to-r from-purple-600 to-violet-900 hover:from-green-700 hover:to-lime-500 w-full rounded-md mt-3 h-12'>
+          <span class="loader htmx-indicator"></span><span class="htmx-indicator-txt">Download Country flags</span>
+        </button>
+        <button type='submit' hx-get="/api/import/logout" hx-target="#response" class='bg-gradient-to-r from-violet-600 to-red-900 hover:from-red-600 hover:to-red-800 w-full rounded-md mt-10 h-12'>Logout</button>
     </div>
   </main>
 </Layout>
+<style>
+  .htmx-indicator,
+  .htmx-request>.htmx-indicator-txt {
+    display:none;
+  }
+  .htmx-request>.htmx-indicator,
+  .htmx-indicator-txt {
+    display:inline-block;
+  }
+  .loader {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: none; /* inline-block; */
+    border-top: 4px solid #FFF;
+    border-right: 4px solid transparent;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+  }
+  .loader::after {
+    content: '';  
+    box-sizing: border-box;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border-left: 4px solid #00ff55;
+    border-bottom: 4px solid transparent;
+    animation: rotation 0.5s linear infinite reverse;
+  }
+  @keyframes rotation {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+</style>
