@@ -5,8 +5,10 @@ interface Props {
 
 const { title } = Astro.props;
 
-const isLoggedIn = Astro.cookies.get('pbToken') !== undefined;
+const isLoggedIn = !!Astro.cookies.get('pbToken');
 
+const pathname = new URL(Astro.request.url).pathname;
+const currentPath = pathname.slice(1);
 ---
 
 <!doctype html>
@@ -21,21 +23,27 @@ const isLoggedIn = Astro.cookies.get('pbToken') !== undefined;
 	</head>
 	<body>
     {(isLoggedIn) && (
-      <nav class="container p-5 lg:px-8 mx-auto">
-        <ul class="flex">
-          {/* <li class="mr-3"><a href="/">Home</a></li> */}
-          <li class="mx-3"><a href="/">Games</a></li>
-          <li class="mx-3"><a href="/leaderboard">Leaderboard</a></li>
-          {(!isLoggedIn) && (
-            <li class="mx-3"><a href="/login">Log in</a></li>
-          )}
-          {(isLoggedIn) && (
-            <li class="mx-3"><a href="/account">Account</a></li>
-          )}
-        </ul>
+      <nav class="bg-gradient-to-r from-yellow-400 via-emerald-600 to-slate-900">
+        <div class="container p-3 lg:px-8 mx-auto">
+          <div class="relative flex h-16 items-center justify-between">
+            <div class="flex flex-1 items-center justify-center sm:justify-start">
+              <div class="flex flex-shrink-0 items-center">
+                <img class="max-h-16 min-w-16" src="/assets/ec.png" alt="European Championship">
+              </div>
+              <div class="sm:ml-6">
+                <ul class="flex items-center sm:space-x-4">
+                  <li><a class={currentPath === "" ? "active" : "" } href="/">Leaderboard</a></li>
+                  <li><a class={currentPath === "bets" ? "active" : "" } href="/bets">Bets</a></li>
+                </ul>
+              </div>
+            </div>
+            <div class="relative mx-1 sm:mx-3 emoji"><a class={currentPath === "account" ? "active" : "" } href="/account" title="Account">&#x1F469;</a></div>
+            <div class="relative emoji"><a href="#" hx-delete="/account" title="Logout">&#x1F44B;</a></div>
+          </div>
+        </div>
       </nav>
     )}
-    <div class="container mx-auto">
+    <div class="container mx-auto mt-5">
       <slot />
     </div>
 	</body>
@@ -93,6 +101,23 @@ const isLoggedIn = Astro.cookies.get('pbToken') !== undefined;
       text-decoration: none;
     }
   }
+  nav {
+    a {
+      @apply no-underline transition;
+      &.active {
+        @apply bg-violet-800 text-white;
+      }
+      &:not(.active):hover {
+        @apply hover:bg-violet-700 hover:text-white text-gray-200;
+      }
+    }
+    :not(.emoji) a {
+      @apply rounded-md px-3 py-2 font-semibold;
+    }
+    .emoji a {
+      @apply rounded-full p-1 text-4xl;
+    }
+  }
   blockquote {
     background: var(--background-light);
     padding: 1rem;
@@ -126,11 +151,15 @@ const isLoggedIn = Astro.cookies.get('pbToken') !== undefined;
   table {
     border-collapse: collapse;
     margin: 4px;
-    & td, th {
+    th {
+      @apply text-xl font-normal border-b border-slate-400 dark:border-slate-700;
+    }
+    td, th {
       padding: .5rem;
     }
-    & td {
-      border: 1px solid rgb(var(--accent-light)) !important;
+    td {
+      @apply border-b border-slate-600 dark:border-slate-900;
+      /* border: 1px solid rgb(var(--accent-light)) !important; */
     }
   }
 </style>

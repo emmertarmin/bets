@@ -1,48 +1,42 @@
 ---
-import Layout from "@/layouts/Layout.astro"
-import { pbGET } from "@/services/pocketbase"
-import GameCard from "@/components/GameCard.astro"
+import { pbGET } from "@/services/pocketbase";
+import Layout from "@/layouts/Layout.astro";
 
-const pbToken = Astro.cookies.get('pbToken')?.value
-const cookieParams = new URLSearchParams(Astro.cookies.get("pbToken")?.value)
-const userId = cookieParams.get("user")
+const cookieParams = new URLSearchParams(Astro.cookies.get("pbToken")?.value);
+const userId = cookieParams.get("user");
 
-const userData = await pbGET(
+const currentUser = await pbGET(
   `/api/collections/users/records/${userId}`, {}, Astro.cookies.get("pbToken")?.value,
-).then((res) => res.data)
+).then((res) => res.data);
 
-const games = await pbGET('/api/collections/games/records', {
-  sort: 'date',
-  expand: 'team_1,team_2',
-  perPage: 100
-}, pbToken)
-  .then(res => res.data.items)
+const users = await pbGET(
+  "/api/collections/users/records", {}, Astro.cookies.get("pbToken")?.value,
+).then((res) => res.data.items.toSorted((a: any, b: any) => ((b.points - a.points) || (a.username.localeCompare(b.username)))));
 
-const bets = await pbGET('/api/collections/bets/records', {
-  filter: `user="${userData.id}"`
-}, pbToken)
-  .then(res => res.data.items)
+
 ---
 
-<Layout title="Games">
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-8 px-5 lg:px-8">
-    {games.filter((game: any) => game.expand?.team_1.name && game.expand?.team_2.name).map((game: any) => {
-      const bet = bets.find((bet: any) => bet.game === game.id)
-      return (
-        <GameCard
-          gameID={game.id}
-          gameStatus={game.status}
-          teams={`${game.expand?.team_1.country_code_3}:${game.expand?.team_2.country_code_3}`}
-          bets={`${bet?.team_1_score_bet}:${bet?.team_2_score_bet}`}
-          betID={bet?.id}
-          betPoints={bet?.points}
-          results={`${game.team_1_score}:${game.team_2_score}`}
-          gameDate={new Date(game.date).toISOString()}
-        />
-    )
-    })}
-  </div>
-  <!-- <pre>{JSON.stringify(userData, null, 2)}</pre> -->
-  <!-- <pre>{JSON.stringify(games, null, 2)}</pre> -->
-  <!-- <pre>{JSON.stringify(bets, null, 2)}</pre> -->
+<Layout title="Leaderboard">
+  <h1>Leaderboard</h1>
+
+  <center>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Points</th>
+        </tr>
+      </thead>
+      <tbody>
+        {users.map((user: any, index: number) => (
+          <tr class={user.id === currentUser.id ? "text-purple-400 bg-slate-900 font-bold" : ""}>
+            <td title={user.email}>{user.username} {(index === 0 && user.points > 0) && '🏆'}</td>
+            <td>{user.points}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </center>
+
+  <!-- <pre>{JSON.stringify({currentUser, users}, null, 2)}</pre> -->
 </Layout>
