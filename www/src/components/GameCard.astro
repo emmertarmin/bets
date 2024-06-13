@@ -10,8 +10,7 @@ const { gameID, gameStatus, teams, bets, betID, betPoints, results, gameDate } =
 >
     {/* <p class="text-sm text-slate-300 text-center mb-2">match.type</p> */}
     <p class="text-sm text-slate-300 text-center mb-2">
-        {gameDate.substring(0, 10)}
-        {new Date(gameDate).toISOString().substring(11, 16)}
+        {new Date(gameDate).toLocaleString('de-DE')}
     </p>
     <div
         class="game text-center text-sm text-slate-300 mb-2"
