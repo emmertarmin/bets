@@ -20,23 +20,33 @@ if (Astro.request.method === "POST") {
     }
 
     if (formObject.betID) {
-        await pbPATCH(`/api/collections/bets/records/${formObject.betID}`, {
+        const betRecord = await pbPATCH(`/api/collections/bets/records/${formObject.betID}`, {
             team_1_score_bet: formObject.team_1_score_bet,
             team_2_score_bet: formObject.team_2_score_bet
         }, pbToken)
+
+        props.betID = betRecord.data.id
     } else {
-        const userData = await pbGET('/api/collections/users/records', { page: 1, perPage: 1 }, pbToken)
-            .then(res => res.data.items[0])
-        await pbPOST(`/api/collections/bets/records/${formObject.betID}`, {
+        const cookieParams = new URLSearchParams(Astro.cookies.get("pbToken")?.value);
+        const userId = cookieParams.get("user");
+
+        const userData = await pbGET(
+          `/api/collections/users/records/${userId}`, {}, Astro.cookies.get("pbToken")?.value,
+        ).then((res) => res.data);
+  
+        const betRecord = await pbPOST(`/api/collections/bets/records/${formObject.betID}`, {
             user: userData.id,
             game: formObject.gameID,
             team_1_score_bet: formObject.team_1_score_bet,
             team_2_score_bet: formObject.team_2_score_bet
         }, pbToken)
+
+        props.betID = betRecord.data.id
     }
 
     props = {
         ...formObject,
+        ...props,
         bets: typeof formObject.team_1_score_bet !== 'undefined' && typeof formObject.team_2_score_bet !== 'undefined' ? `${formObject.team_1_score_bet}:${formObject.team_2_score_bet}` : null
     }
   } catch (error) {
