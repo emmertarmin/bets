@@ -1,7 +1,7 @@
 ---
 import { getFlag } from "@/utils";
 
-const { gameID, teams, bets, betID, results, gameDate } = Astro.props;
+const { gameID, gameStatus, teams, bets, betID, betPoints, results, gameDate } = Astro.props;
 ---
 
 <div
@@ -138,21 +138,22 @@ const { gameID, teams, bets, betID, results, gameDate } = Astro.props;
         )
     }
     {
-        results ? (
+        gameStatus === 'FINISHED' ? (
             <div class="flex items-center justify-center mt-4">
                 <>
                     <div class="text-2xl px-3">{results.split(':')[0]}</div>
                     <div class="px-3">:</div>
                     <div class="text-2xl px-3">{results.split(':')[1]}</div>
                 </>
-                {/* {betID?.points && (
-                    <div class="absolute top-3 right-3 text-2xl bg-purple-900 rounded-full w-10 h-10 flex items-center justify-center">
-                        {bet?.points}
-                    </div>
-                )} */}
             </div>
         ) : (
             <div class="h-8 mt-4" />
         )
     }
+    { 
+        gameStatus === 'FINISHED' && (
+        <div class="absolute bottom-3 left-3 text-2xl bg-purple-900 rounded-full w-10 h-10 flex items-center justify-center">
+            {betPoints}
+        </div>
+    )}
 </div>

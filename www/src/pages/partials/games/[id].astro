@@ -1,7 +1,6 @@
 ---
 
 import GameCard from '@/components/GameCard.astro'
-import { pbGET } from '@/services/pocketbase'
 import { pbPOST } from '@/services/pocketbase'
 import { pbPATCH } from '@/services/pocketbase'
 
@@ -12,6 +11,8 @@ const { id: gameID } = Astro.params as { id: string };
 if (Astro.request.method === "POST") {
   try {
     const pbToken = Astro.cookies.get('pbToken')?.value
+    const cookieParams = new URLSearchParams(Astro.cookies.get("pbToken")?.value)
+    const userID = cookieParams.get("user")
 
     const formData = await Astro.request.formData()
     const formObject: any = {}
@@ -27,21 +28,15 @@ if (Astro.request.method === "POST") {
 
         props.betID = betRecord.data.id
     } else {
-        const cookieParams = new URLSearchParams(Astro.cookies.get("pbToken")?.value);
-        const userId = cookieParams.get("user");
 
-        const userData = await pbGET(
-          `/api/collections/users/records/${userId}`, {}, Astro.cookies.get("pbToken")?.value,
-        ).then((res) => res.data);
-  
-        const betRecord = await pbPOST(`/api/collections/bets/records/${formObject.betID}`, {
-            user: userData.id,
-            game: formObject.gameID,
-            team_1_score_bet: formObject.team_1_score_bet,
-            team_2_score_bet: formObject.team_2_score_bet
-        }, pbToken)
+      const betRecord = await pbPOST(`/api/collections/bets/records/${formObject.betID}`, {
+          user: userID,
+          game: formObject.gameID,
+          team_1_score_bet: formObject.team_1_score_bet,
+          team_2_score_bet: formObject.team_2_score_bet
+      }, pbToken)
 
-        props.betID = betRecord.data.id
+      props.betID = betRecord.data.id
     }
 
     props = {
