@@ -30,9 +30,11 @@ const bets = await pbGET('/api/collections/bets/records', {
       return (
         <GameCard
           gameID={game.id}
+          gameStatus={game.status}
           teams={`${game.expand?.team_1.country_code_3}:${game.expand?.team_2.country_code_3}`}
           bets={`${bet?.team_1_score_bet}:${bet?.team_2_score_bet}`}
-          bet={bet}
+          betID={bet?.id}
+          betPoints={bet?.points}
           results={`${game.team_1_score}:${game.team_2_score}`}
           gameDate={new Date(game.date).toISOString()}
         />
