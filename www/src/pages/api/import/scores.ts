@@ -24,7 +24,7 @@ export async function POST({ request, cookies }: APIContext) {
   } else {
     // auth with header X-Pb-User + X-Pb-Pass
     try {
-      await pb.admins.authWithPassword(request.headers.get('X-Pb-User'), request.headers.get('X-Pb-Pass'));
+      await pb.admins.authWithPassword((request.headers.get('X-Pb-User') || ''), (request.headers.get('X-Pb-Pass') || ''));
     } catch (err: any) {
       const response = '<p>' + (err?.response?.message || "There was an error") + '</p>';
       return new Response(response, { status: 401, headers: headers });
