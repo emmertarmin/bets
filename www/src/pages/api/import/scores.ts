@@ -22,7 +22,7 @@ export async function GET({ request, cookies }: APIContext) {
   }
 
   // read token cookie
-  const auth_token = cookies.has('fd_token') ? cookies.get('fd_token').value : '';
+  const auth_token = cookies.get('fd_token')?.value || '';
 
   let json_data: any = null;
   try {

@@ -1,5 +1,5 @@
 import { pb } from '@/services/pocketbase';
-import { APIContext } from 'astro';
+import { type APIContext } from 'astro';
 
 export async function POST({ request }: APIContext) {
     const formData = await request.formData();
@@ -11,7 +11,7 @@ export async function POST({ request }: APIContext) {
     }
     let response_message: any = "<p>You are logged in</p>";
     try {
-        const authData = await pb.admins.authWithPassword(formObject.email, formObject.password);
+        await pb.admins.authWithPassword(formObject.email, formObject.password);
         if (formObject.apikey.trim().length > 0) {
             const d = new Date();
             d.setTime(d.getTime() + (14*24*60*60*1000));

@@ -1,6 +1,6 @@
 ---
 import { isAuthorizedAdmin } from '@/utils';
-import Layout from '@/layouts/Imports.astro';
+import Layout from '@/layouts/Layout.astro';
 
 // do Auth check
 if (!(Astro.cookies.has('pb_auth') && isAuthorizedAdmin(Astro.request.headers.get('cookie')))) {
@@ -51,7 +51,7 @@ if (!(Astro.cookies.has('pb_auth') && isAuthorizedAdmin(Astro.request.headers.ge
     animation: rotation 1s linear infinite;
   }
   .loader::after {
-    content: '';  
+    content: '';
     box-sizing: border-box;
     position: absolute;
     left: 0;

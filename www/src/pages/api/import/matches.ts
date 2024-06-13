@@ -4,12 +4,6 @@ import { pb } from "@/services/pocketbase";
 // import json_data from "@/data/matches_scheduled.json";
 import type { APIContext } from 'astro';
 
-interface Team {
-  name: string;
-  country_code_3: string;
-  crest: string;
-  id: number;
-}
 /*
 interface Match {
   homeTeam: Team;
@@ -35,7 +29,7 @@ interface Competition {
 const pb_status: any[] = [];
 const headers: any = { "Content-Type": "html/text" };
 
-async function check_team(team: Team) {
+async function check_team(team: any) {
   let record: any = team;
   // create data
   const data = new FormData();
@@ -65,7 +59,7 @@ async function check_team(team: Team) {
   return record;
 }
 
-export async function GET({ request }: APIContext) {
+export async function GET({ request, cookies }: APIContext) {
 
   // const query_params = new URL(request.url).searchParams;
   // console.log("Request params:", query_params);
@@ -74,18 +68,18 @@ export async function GET({ request }: APIContext) {
   pb.authStore.loadFromCookie(request.headers.get('cookie') || '');
   if (!pb.authStore.isValid) {
     const response = '<p>Unauthorized</p>';
-    return new Response(response, { status: 401, headers: headers });
+    return new Response(response, { status: 401, headers });
   }
 
     // read token cookie
-  const auth_token = cookies.has('fd_token') ? cookies.get('fd_token').value : '';
+  const auth_token = cookies.get('fd_token')?.value || '';
 
   let json_data: any = null;
   try {
     const api_response = await fetch(`http://api.football-data.org/v4/competitions/2018/matches/?status=SCHEDULED`, {
-        headers: {
-            "X-Auth-Token": auth_token
-        }
+      headers: {
+        'X-Auth-Token': auth_token
+      }
     });
     if (api_response.ok) {
       json_data = await api_response.json()
@@ -170,7 +164,7 @@ export async function GET({ request }: APIContext) {
     }
   }
 
-  const body = '<p class="mb-3 text-xl">Matches updated</p><div class="font-mono text-xs">'+JSON.stringify(pb_status)+'</div>''; // body must be a string
+  const body = '<p class="mb-3 text-xl">Matches updated</p><div class="font-mono text-xs">'+JSON.stringify(pb_status)+'</div>'; // body must be a string
 
   return new Response(body, { headers: headers });
 
