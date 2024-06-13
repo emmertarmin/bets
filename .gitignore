@@ -12,3 +12,5 @@ nginx/logs/*
 
 pb/pb_data/*
 !pb/pb_data/.gitkeep
+
+pb/pocketbase*

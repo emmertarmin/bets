@@ -32,7 +32,7 @@ onModelAfterUpdate((e) => {
     // Update points at users
     try {
       $app.dao().db()
-        .newQuery('UPDATE users SET points = (SELECT SUM(points) FROM bets WHERE user = users.id GROUP BY user)')
+        .newQuery('UPDATE users SET points = COALESCE((SELECT SUM(points) FROM bets WHERE user = users.id GROUP BY user), 0)')
         .execute()
     } catch (e) {
       console.error(e)
