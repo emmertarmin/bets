@@ -14,6 +14,7 @@ const userData = await pbGET(
 const games = await pbGET('/api/collections/games/records', {
   sort: 'date',
   expand: 'team_1,team_2',
+  perPage: 100
 }, pbToken)
   .then(res => res.data.items)
 
