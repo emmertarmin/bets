@@ -25,7 +25,7 @@ const bets = await pbGET('/api/collections/bets/records', {
 ---
 
 <Layout title="Games">
-  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 lg:gap-8 px-5 lg:px-8">
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-8 px-5 lg:px-8">
     {games.filter((game: any) => game.expand?.team_1.name && game.expand?.team_2.name).map((game: any) => {
       const bet = bets.find((bet: any) => bet.game === game.id)
       return (
