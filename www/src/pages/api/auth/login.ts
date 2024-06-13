@@ -26,7 +26,7 @@ export async function POST({ request, cookies }: any) {
 
     cookies.set('pbToken', cookieParams.toString(), { httpOnly: false, path: '/' })
 
-    headers['HX-Location'] = '/games'
+    headers['HX-Location'] = '/'
 
     return new Response(
       '<p class="fadeOut">Authentication successful</p>', {
