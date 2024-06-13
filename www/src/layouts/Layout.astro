@@ -10,7 +10,7 @@ const isLoggedIn = Astro.cookies.get('pbToken') !== undefined;
 ---
 
 <!doctype html>
-<html lang="en" class="bg-slate-800 text-white min-h-screen">
+<html lang="en" class="bg-gradient-to-r from-violet-900 to-slate-900 text-white min-h-screen">
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="description" content="Astro description" />
@@ -89,7 +89,6 @@ const isLoggedIn = Astro.cookies.get('pbToken') !== undefined;
 	}
   a {
     text-decoration: underline;
-    color: rgb(var(--accent-light));
     &:hover {
       text-decoration: none;
     }

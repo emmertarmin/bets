@@ -4,12 +4,12 @@ import { pbGET } from "@/services/pocketbase"
 import GameCard from "@/components/GameCard.astro"
 
 const pbToken = Astro.cookies.get('pbToken')?.value
+const cookieParams = new URLSearchParams(Astro.cookies.get("pbToken")?.value)
+const userId = cookieParams.get("user")
 
-const userData = await pbGET('/api/collections/users/records', {
-  page: 1,
-  perPage: 1
-}, pbToken)
-  .then(res => res.data.items[0])
+const userData = await pbGET(
+  `/api/collections/users/records/${userId}`, {}, Astro.cookies.get("pbToken")?.value,
+).then((res) => res.data)
 
 const games = await pbGET('/api/collections/games/records', {
   sort: 'date',
@@ -32,13 +32,14 @@ const bets = await pbGET('/api/collections/bets/records', {
           gameID={game.id}
           teams={`${game.expand?.team_1.country_code_3}:${game.expand?.team_2.country_code_3}`}
           bets={`${bet?.team_1_score_bet}:${bet?.team_2_score_bet}`}
-          betID={bet?.id}
+          bet={bet}
           results={`${game.team_1_score}:${game.team_2_score}`}
           gameDate={new Date(game.date).toISOString()}
         />
     )
     })}
   </div>
+  <!-- <pre>{JSON.stringify(userData, null, 2)}</pre> -->
   <!-- <pre>{JSON.stringify(games, null, 2)}</pre> -->
   <!-- <pre>{JSON.stringify(bets, null, 2)}</pre> -->
 </Layout>
