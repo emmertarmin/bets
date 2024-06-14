@@ -9,20 +9,30 @@ const headers: any = { "Content-Type": "text/html" };
 const today = new Date(Date.now());
 const date_filter = today.toISOString().split("T");
 
-export async function GET({ request, cookies }: APIContext) {
+export async function POST({ request, cookies }: APIContext) {
 
   // const query_params = new URL(request.url).searchParams;
   // console.log("Request params:", query_params);
 
-  // authenticate with token first
-  pb.authStore.loadFromCookie(request.headers.get('cookie') || '');
-  if (!pb.authStore.isValid) {
-    const response = '<p>Unauthorized</p>';
-    return new Response(response, { status: 401, headers: headers });
+  if (cookies.has('pb_auth')) {
+    // auth with cookie and token
+    pb.authStore.loadFromCookie(request.headers.get('cookie') || '');
+    if (!pb.authStore.isValid) {
+      const response = '<p>Unauthorized</p>';
+      return new Response(response, { status: 401, headers: headers });
+    }
+  } else {
+    // auth with header X-Pb-User + X-Pb-Pass
+    try {
+      await pb.admins.authWithPassword((request.headers.get('X-Pb-User') || ''), (request.headers.get('X-Pb-Pass') || ''));
+    } catch (err: any) {
+      const response = '<p>' + (err?.response?.message || "There was an error") + '</p>';
+      return new Response(response, { status: 401, headers: headers });
+    }
   }
 
-  // read token cookie
-  const auth_token = cookies.get('fd_token')?.value || '';
+  // read fd_token cookie or from header X-Auth-Token
+  const auth_token = cookies.get('fd_token')?.value || request.headers.get('X-Auth-Token') || '';
 
   let json_data: any = null;
   try {
@@ -33,6 +43,8 @@ export async function GET({ request, cookies }: APIContext) {
     });
     if (api_response.ok) {
       json_data = await api_response.json()
+    } else {
+      return new Response('<div class="font-mono text-xs">'+JSON.stringify(api_response)+'</div>', { status: api_response.status });  
     }
   } catch (err) {
     // console.dir(err);
