@@ -25,17 +25,17 @@ import euro2024_logo from '/assets/logos/UEFA_Euro_2024.svg?raw';
 	</head>
 	<body>
     {(isLoggedIn) && (
-      <nav class="bg-gradient-to-r from-violet-800 to-slate-900">
+      <nav class="bg-gradient-to-r from-yellow-400 via-emerald-600 to-slate-900">
         <div class="container p-3 lg:px-8 mx-auto">
           <div class="relative flex h-16 items-center justify-between">
             <div class="flex flex-1 items-center justify-center sm:justify-start">
-              <div class="flex flex-shrink-0 items-center flex-col h-16 max-w-10">
-                <img src="/assets/logos/euro2024.png" alt="European Championship">
+              <div class="flex flex-shrink-0 items-center justify-between flex-col h-16 max-w-10 sm:max-w-12">
+                <img class="max-w-9 sm:max-w-10 max-h-10" src="/assets/logos/euro2024.png" alt="European Championship">
                 <div aria-label="Euro 2024 Logo">
                   <Fragment set:html={euro2024_logo} />
                 </div>
               </div>
-              <div class="sm:ml-6">
+              <div class="ml-1 sm:ml-6">
                 <ul class="flex items-center sm:space-x-4">
                   <li><a class={currentPath === "" ? "active" : "" } href="/">Leaderboard</a></li>
                   <li><a class={currentPath === "bets" ? "active" : "" } href="/bets">Bets</a></li>
@@ -169,10 +169,11 @@ import euro2024_logo from '/assets/logos/UEFA_Euro_2024.svg?raw';
   svg {
     max-width: 100% !important;
     height: auto !important;
-    path {
-      fill: #ffffff;
-    }
   }
+  .svg-white svg path {
+    fill: #ffffff;
+  }
+
 
 </style>
 
@@ -184,6 +185,6 @@ document.body.addEventListener('htmx:beforeOnLoad', function (evt) {
     // error messages
     evt.detail.shouldSwap = true;
     evt.detail.isError = false;
-    }
-  });
+  }
+});
 </script>
