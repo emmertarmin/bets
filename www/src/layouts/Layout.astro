@@ -71,12 +71,17 @@ import euro2024_logo from '/assets/logos/UEFA_Euro_2024.svg?raw';
 		font-family: system-ui, sans-serif;
 	}
 
+  /* hide number arrows */
+  /* Chrome, Safari, Edge, Opera */
   input[type="number"]::-webkit-inner-spin-button,
   input[type="number"]::-webkit-outer-spin-button {
     -webkit-appearance: none;
     margin: 0;
   }
-
+  /* Firefox */
+  input[type=number] {
+    -moz-appearance: textfield;
+  }
   input[type="number"],input[type="text"],input[type="email"],input[type="password"] {
     @apply py-1 bg-slate-600 border-2 border-transparent rounded-md focus:border-purple-400 ring-0 outline-none;
   }

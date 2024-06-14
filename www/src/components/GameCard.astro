@@ -30,7 +30,7 @@ const { gameId, gameStatus, teams, bets, betId, betPoints, results, gameDate, de
         <input type="hidden" name="betId" value={betId} />
         <input type="hidden" name="results" value={results} />
         <input type="hidden" name="gameDate" value={gameDate} />
-        <div class="flex items-center">
+        <div class="flex items-center justify-center">
             <div class="mr-4 text-center">
                 <span class="flag">{getFlag(teams.split(':')[0] || '')}</span>
                 <br/>
@@ -39,7 +39,7 @@ const { gameId, gameStatus, teams, bets, betId, betPoints, results, gameDate, de
             <div>
                 <input
                     type="number"
-                    class="text-4xl text-center w-full"
+                    class="text-4xl text-center w-full max-w-20"
                     name="team_1_score_bet"
                     value={bets?.split(':')[0] || ''}
                     min="0" max="99"
@@ -51,7 +51,7 @@ const { gameId, gameStatus, teams, bets, betId, betPoints, results, gameDate, de
             <div>
                 <input
                     type="number"
-                    class="text-4xl text-center w-full"
+                    class="text-4xl text-center w-full max-w-20"
                     name="team_2_score_bet"
                     value={bets?.split(':')[1] || ''}
                     min="0" max="99"
@@ -103,16 +103,5 @@ const { gameId, gameStatus, teams, bets, betId, betPoints, results, gameDate, de
     }
     .game-card:hover .flag {
         @apply filter saturate-100;
-    }
-    /* hide number arrows */
-    /* Chrome, Safari, Edge, Opera */
-    input::-webkit-outer-spin-button,
-    input::-webkit-inner-spin-button {
-        -webkit-appearance: none;
-        margin: 0;
-    }
-    /* Firefox */
-    input[type=number] {
-        -moz-appearance: textfield;
     }
 </style>
