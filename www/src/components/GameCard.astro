@@ -1,7 +1,7 @@
 ---
 import { getFlag } from "@/utils";
 
-const { gameID, gameStatus, teams, bets, betID, betPoints, results, gameDate } = Astro.props;
+const { gameID, gameStatus, teams, bets, betID, betPoints, results, gameDate, deadlineReached } = Astro.props;
 ---
 
 <div
@@ -45,7 +45,7 @@ const { gameID, gameStatus, teams, bets, betID, betPoints, results, gameDate } =
                             class="text-4xl text-center w-full"
                             name="team_1_score_bet"
                             value={bets?.split(":")[0] || ""}
-                            disabled={gameStatus === 'FINISHED'}
+                            disabled={deadlineReached || gameStatus === 'FINISHED'}
                         />
                     </div>
                     <div class="px-3">:</div>
@@ -55,7 +55,7 @@ const { gameID, gameStatus, teams, bets, betID, betPoints, results, gameDate } =
                             class="text-4xl text-center w-full"
                             name="team_2_score_bet"
                             value={bets?.split(":")[1] || ""}
-                            disabled={gameStatus === 'FINISHED'}
+                            disabled={deadlineReached || gameStatus === 'FINISHED'}
                         />
                     </div>
                     <div class="ml-4 text-center">
@@ -106,7 +106,7 @@ const { gameID, gameStatus, teams, bets, betID, betPoints, results, gameDate } =
                             class="text-4xl text-center w-full"
                             name="team_1_score_bet"
                             value={bets?.split(':')[0] || ''}
-                            disabled={gameStatus === 'FINISHED'}
+                            disabled={deadlineReached || gameStatus === 'FINISHED'}
                         />
                     </div>
                     <div class="px-3">:</div>
@@ -116,7 +116,7 @@ const { gameID, gameStatus, teams, bets, betID, betPoints, results, gameDate } =
                             class="text-4xl text-center w-full"
                             name="team_2_score_bet"
                             value={bets?.split(':')[1] || ''}
-                            disabled={gameStatus === 'FINISHED'}
+                            disabled={deadlineReached || gameStatus === 'FINISHED'}
                         />
                     </div>
                     <div class="ml-4 text-center">
