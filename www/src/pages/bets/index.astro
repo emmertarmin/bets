@@ -28,6 +28,9 @@ const bets = await pbGET('/api/collections/bets/records', {
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-8 px-5 lg:px-8">
     {games.filter((game: any) => game.expand?.team_1.name && game.expand?.team_2.name).map((game: any) => {
       const bet = bets.find((bet: any) => bet.game === game.id)
+      const deadline = new Date(game.date)
+      deadline.setHours(deadline.getHours() - 1)
+      const deadlineReached = deadline < new Date()
       return (
         <GameCard
           gameID={game.id}
@@ -38,6 +41,7 @@ const bets = await pbGET('/api/collections/bets/records', {
           betPoints={bet?.points}
           results={`${game.team_1_score}:${game.team_2_score}`}
           gameDate={new Date(game.date).toISOString()}
+          deadlineReached={deadlineReached}
         />
     )
     })}
