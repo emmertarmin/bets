@@ -5,7 +5,7 @@ export const onRequest = defineMiddleware((context, next) => {
     !/\/login\/?$/.test(context.url.pathname)
     && !/\/register\/?$/.test(context.url.pathname)
     && !/\/import\/?$/.test(context.url.pathname)
-    && !context.cookies.has('pbToken')
+    && !(context.cookies.has('pbToken') && new URLSearchParams(context.cookies.get('pbToken')?.value).has("token"))
     && !context.request.headers.get('HX-Request')
   ) {
     return context.redirect('/login', 303)

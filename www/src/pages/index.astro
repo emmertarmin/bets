@@ -1,26 +1,14 @@
 ---
-import { pbGET } from "@/services/pocketbase";
 import Layout from "@/layouts/Layout.astro";
 import { getFlag } from "@/utils";
+import { getUser, getAllUsers, getMatches, getUserBets } from "@/services/dbhelper";
 
 const pbToken = Astro.cookies.get("pbToken")?.value || '';
-const cookieParams = new URLSearchParams(pbToken);
-const userId = cookieParams.get("user");
 
-const currentUser = await pbGET(
-  `/api/collections/users/records/${userId}`, {}, pbToken,
-).then((res) => res.data);
-
-const users = await pbGET(
-  "/api/collections/users/records", {}, pbToken,
-).then((res) => res.data.items.toSorted((a: any, b: any) => ((b.points - a.points) || (a.username.localeCompare(b.username)))));
-
-const games = await pbGET('/api/collections/games/records', {
-  sort: 'date',
-  expand: 'team_1,team_2',
-  perPage: 100
-}, pbToken).then(res => res.data.items)
-
+const currentUser = await getUser(pbToken);
+const users = await getAllUsers(pbToken);
+const games = await getMatches(pbToken);
+const bets = await getUserBets(pbToken);
 
 ---
 
@@ -56,7 +44,9 @@ const games = await pbGET('/api/collections/games/records', {
         </tr>
       </thead>
       <tbody class="[&_tr:nth-child(odd)]:bg-slate-800">
-        { games.map((game: any) => (
+        { games.filter((game: any) => game.expand?.team_1.name && game.expand?.team_2.name).map((game: any) => {
+          const bet = bets.find((bet: any) => bet.game === game.id);
+          return (
           <tr>
             <td class="text-right countdown"><span></span><span>{game.date}</span></td>
             <td class="font-semibold"><div class="flex items-center justify-center w-full gap-1">{game.expand ? <div class="text-right w-2/5">
@@ -66,10 +56,11 @@ const games = await pbGET('/api/collections/games/records', {
             }</div></td>
             <td>{game.status === "FINISHED" ? game.team_1_result + " : " + game.team_2_result : ""}</td>
             <td>{game.stage === "GROUP_STAGE" ? game.group.replace('_',' ') : game.stage.replace('_',' ') }</td>
-            <td></td>
-            <td></td>
+            <td>{bet?.team_1_score_bet}:{bet?.team_2_score_bet}</td>
+            <td>{bet?.points}</td>
           </tr>
-        ))}
+          );
+        })}
       </tbody>
     </table>
   </div>
@@ -87,33 +78,11 @@ for (const c of countdowns) {
   // less than 48 hours?
   if (spans.length == 2) {
     if(matchDate.getTime() - now < 259200000) {
-      showCountdown(matchDate.getTime(), spans[0]);
+      showCountdown(matchDate.getTime(), spans[0], { post_text: " left, "});
     }
     const matchTime = matchDate.toLocaleTimeString().split(":");
     matchTime.pop();
     spans[1].innerText = matchDate.toLocaleDateString() + ', ' + matchTime.join(":");
   }
 };
-function showCountdown(time, elm) {
-  var x = setInterval(function() {
-    // Get today's date and time
-    const now = new Date().getTime();
-    // Find the distance between now and the count down date
-    const distance = time - now;
-    // Time calculations for days, hours, minutes and seconds
-    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-  
-    // Display the result in the element with id="demo"
-    elm.innerHTML = (days > 0 ? days + "d " : '') + (hours > 0 ? hours + "h " : '') + minutes + "m " + seconds + "s left, ";
-  
-    // If the count down is finished, write some text
-    if (distance <= 0) {
-      clearInterval(x);
-      elm.innerHTML = "";
-    }
-  }, 1000);
-}
 </script>

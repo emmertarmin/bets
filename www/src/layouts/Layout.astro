@@ -5,7 +5,7 @@ interface Props {
 
 const { title } = Astro.props;
 
-const isLoggedIn = !!Astro.cookies.get('pbToken');
+const isLoggedIn = (Astro.cookies.has('pbToken') && new URLSearchParams(Astro.cookies.get('pbToken')?.value).has("token"));
 
 const pathname = new URL(Astro.request.url).pathname;
 const currentPath = pathname.slice(1);
@@ -192,4 +192,28 @@ document.body.addEventListener('htmx:beforeOnLoad', function (evt) {
     evt.detail.isError = false;
   }
 });
+function showCountdown(time, elm, options = {}) {
+  var x = setInterval(function() {
+    const diff = options.diff || 0;
+    const post_text = options.post_text || '';
+    // Get today's date and time
+    const now = new Date().getTime();
+    // Find the distance between now and the count down date
+    const distance = time - diff - now ;
+    // Time calculations for days, hours, minutes and seconds
+    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+  
+    // Display the result in the element with id="demo"
+    elm.innerHTML = (days > 0 ? days + "d " : '') + (hours > 0 ? hours + "h " : '') + minutes + "m " + seconds + "s" + post_text;
+  
+    // If the count down is finished, write some text
+    if (distance <= 0) {
+      clearInterval(x);
+      elm.innerHTML = "";
+    }
+  }, 1000);
+}
 </script>

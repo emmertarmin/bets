@@ -1,13 +1,10 @@
 ---
 import Layout from "@/layouts/Layout.astro"
-import { pbGET } from "@/services/pocketbase"
+import { getUser } from "@/services/dbhelper";
 
-const cookieParams = new URLSearchParams(Astro.cookies.get("pbToken")?.value);
-const userId = cookieParams.get("user");
+const pbToken = Astro.cookies.get("pbToken")?.value || '';
 
-const userData = await pbGET(
-  `/api/collections/users/records/${userId}`, {}, Astro.cookies.get("pbToken")?.value,
-).then((res) => res.data);
+const userData = await getUser(pbToken);
 
 if (!userData?.id) {
   Astro.cookies.delete('pbToken')

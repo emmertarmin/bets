@@ -1,27 +1,14 @@
 ---
 import Layout from "@/layouts/Layout.astro"
-import { pbGET } from "@/services/pocketbase"
 import GameCard from "@/components/GameCard.astro"
+import { getUser, getMatches, getUserBets } from "@/services/dbhelper";
 
-const pbToken = Astro.cookies.get('pbToken')?.value
-const cookieParams = new URLSearchParams(Astro.cookies.get("pbToken")?.value)
-const userId = cookieParams.get("user")
+const pbToken = Astro.cookies.get("pbToken")?.value || '';
 
-const userData = await pbGET(
-  `/api/collections/users/records/${userId}`, {}, Astro.cookies.get("pbToken")?.value,
-).then((res) => res.data)
+const userData = await getUser(pbToken);
+const games = await getMatches(pbToken);
+const bets = await getUserBets(pbToken);
 
-const games = await pbGET('/api/collections/games/records', {
-  sort: 'date',
-  expand: 'team_1,team_2',
-  perPage: 100
-}, pbToken)
-  .then(res => res.data.items)
-
-const bets = await pbGET('/api/collections/bets/records', {
-  filter: `user="${userData.id}"`
-}, pbToken)
-  .then(res => res.data.items)
 ---
 
 <Layout title="Games">
