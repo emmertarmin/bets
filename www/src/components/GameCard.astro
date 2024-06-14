@@ -17,137 +17,65 @@ const { gameId, gameStatus, teams, bets, betId, betPoints, results, gameDate, de
         data-date={gameDate}
     >
     </div>
-    {
-        !betId && (
-            <form
-                hx-post={`/partials/games/${gameId}`}
-                hx-target={`#game-card-${gameId}`}
-                hx-swap="outerHTML"
-                data-game-id={gameId}
-                data-bet-id={betId}
-            >
-                <input type="hidden" name="gameId" value={gameId} />
-                <input type="hidden" name="teams" value={teams} />
-                <input type="hidden" name="bets" value={bets} />
-                <input type="hidden" name="bets" value={bets} />
-                <input type="hidden" name="betId" value={betId} />
-                <input type="hidden" name="results" value={results} />
-                <input type="hidden" name="gameDate" value={gameDate} />
-                <div class="flex items-center">
-                    <div class="mr-4 text-center">
-                      <span class="flag">{getFlag(teams.split(':')[0] || '')}</span>
-                      <br/>
-                      {(teams.split(':')[0] || '').toUpperCase()}
-                      </div>
-                    <div>
-                        <input
-                            type="number"
-                            class="text-4xl text-center w-full"
-                            name="team_1_score_bet"
-                            value={bets?.split(":")[0] || ""}
-                            min="0" max="99"
-                            hx-on:change={`document.getElementById("submit-${gameId}").classList.remove("opacity-0")`}
-                            disabled={deadlineReached || gameStatus === 'FINISHED'}
-                        />
-                    </div>
-                    <div class="px-3">:</div>
-                    <div>
-                        <input
-                            type="number"
-                            class="text-4xl text-center w-full"
-                            name="team_2_score_bet"
-                            value={bets?.split(":")[1] || ""}
-                            min="0" max="99"
-                            hx-on:change={`document.getElementById("submit-${gameId}").classList.remove("opacity-0")`}
-                            disabled={deadlineReached || gameStatus === 'FINISHED'}
-                        />
-                    </div>
-                    <div class="ml-4 text-center">
-                      <span class="flag">{getFlag(teams.split(':')[1] || '')}</span>
-                      <br/>
-                      {(teams.split(':')[1] || '').toUpperCase()}
-                    </div>
-                </div>
-                <input type="hidden" name="gameId" value={gameId} />
-                <div
-                    id={`bet-create-form-${gameId}-result`}
-                    class="absolute left-3 bottom-3"
-                ></div>
-                <button
-                    type="submit" id={`submit-${gameId}`}
-                    class="opacity-0 transition-opacity absolute right-3 bottom-3 rounded-full w-10 h-10 bg-purple-900 text-white px-4 py-2 flex items-center justify-center"
-                >
-                    &check;
-                </button>
-            </form>
-        )
-    }
-    {
-        betId && (
-            <form
-                hx-post={`/partials/games/${gameId}`}
-                hx-target={`#game-card-${gameId}`}
-                hx-swap="outerHTML"
-                data-game-id={gameId}
-                data-bet-id={betId}
-            >
-                <input type="hidden" name="gameId" value={gameId} />
-                <input type="hidden" name="teams" value={teams} />
-                <input type="hidden" name="bets" value={bets} />
-                <input type="hidden" name="bets" value={bets} />
-                <input type="hidden" name="betId" value={betId} />
-                <input type="hidden" name="results" value={results} />
-                <input type="hidden" name="gameDate" value={gameDate} />
-                <div class="flex items-center">
-                    <div class="mr-4 text-center">
-                      <span class="flag">{getFlag(teams.split(':')[0] || '')}</span>
-                      <br/>
-                      {(teams.split(':')[0] || '').toUpperCase()}
-                    </div>
-                    <div>
-                        <input
-                            type="number"
-                            class="text-4xl text-center w-full"
-                            name="team_1_score_bet"
-                            value={bets?.split(':')[0] || ''}
-                            min="0" max="99"
-                            hx-on:change={`document.getElementById("submit-${gameId}").classList.remove("opacity-0")`}
-                            disabled={deadlineReached || gameStatus === 'FINISHED'}
-                        />
-                    </div>
-                    <div class="px-3">:</div>
-                    <div>
-                        <input
-                            type="number"
-                            class="text-4xl text-center w-full"
-                            name="team_2_score_bet"
-                            value={bets?.split(':')[1] || ''}
-                            min="0" max="99"
-                            hx-on:change={`document.getElementById("submit-${gameId}").classList.remove("opacity-0")`}
-                            disabled={deadlineReached || gameStatus === 'FINISHED'}
-                        />
-                    </div>
-                    <div class="ml-4 text-center">
-                      <span class="flag">{getFlag(teams.split(':')[1] || '')}</span>
-                      <br/>
-                      {(teams.split(':')[1] || '').toUpperCase()}
-                    </div>
-                </div>
-                <input type="hidden" name="gameId" value={gameId} />
-                <input type="hidden" name="betId" value={betId} />
-                <div
-                    id={`bet-update-form-${gameId}-result`}
-                    class="absolute left-3 bottom-3"
+    <form
+        hx-post={`/partials/games/${gameId}`}
+        hx-target={`#game-card-${gameId}`}
+        hx-swap="outerHTML"
+        data-game-id={gameId}
+        data-bet-id={betId}
+    >
+        <input type="hidden" name="gameId" value={gameId} />
+        <input type="hidden" name="teams" value={teams} />
+        <input type="hidden" name="bets" value={bets} />
+        <input type="hidden" name="betId" value={betId} />
+        <input type="hidden" name="results" value={results} />
+        <input type="hidden" name="gameDate" value={gameDate} />
+        <div class="flex items-center">
+            <div class="mr-4 text-center">
+                <span class="flag">{getFlag(teams.split(':')[0] || '')}</span>
+                <br/>
+                {(teams.split(':')[0] || '').toUpperCase()}
+            </div>
+            <div>
+                <input
+                    type="number"
+                    class="text-4xl text-center w-full"
+                    name="team_1_score_bet"
+                    value={bets?.split(':')[0] || ''}
+                    min="0" max="99"
+                    hx-on:change={`document.getElementById("submit-${gameId}").classList.remove("opacity-0")`}
+                    disabled={deadlineReached || gameStatus === 'FINISHED'}
                 />
-                <button
-                    type="submit" id={`submit-${gameId}`}
-                    class="opacity-0 transition-opacity absolute right-3 bottom-3 rounded-full w-10 h-10 bg-purple-900 text-white px-4 py-2 flex items-center justify-center"
-                >
-                    &check;
-                </button>
-            </form>
-        )
-    }
+            </div>
+            <div class="px-3">:</div>
+            <div>
+                <input
+                    type="number"
+                    class="text-4xl text-center w-full"
+                    name="team_2_score_bet"
+                    value={bets?.split(':')[1] || ''}
+                    min="0" max="99"
+                    hx-on:change={`document.getElementById("submit-${gameId}").classList.remove("opacity-0")`}
+                    disabled={deadlineReached || gameStatus === 'FINISHED'}
+                />
+            </div>
+            <div class="ml-4 text-center">
+                <span class="flag">{getFlag(teams.split(':')[1] || '')}</span>
+                <br/>
+                {(teams.split(':')[1] || '').toUpperCase()}
+            </div>
+        </div>
+        <div
+            id={`bet-update-form-${gameId}-result`}
+            class="absolute left-3 bottom-3"
+        />
+        <button
+            type="submit" id={`submit-${gameId}`}
+            class="opacity-0 transition-opacity absolute right-3 bottom-3 rounded-full w-10 h-10 bg-purple-900 text-white px-4 py-2 flex items-center justify-center"
+        >
+            &check;
+        </button>
+    </form>
     {
         gameStatus === 'FINISHED' ? (
             <div class="flex items-center justify-center mt-4">
