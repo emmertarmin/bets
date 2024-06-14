@@ -6,13 +6,13 @@ import { pbPATCH } from '@/services/pocketbase'
 
 let props: any = {}
 
-const { id: gameID } = Astro.params as { id: string };
+const { id: gameId } = Astro.params as { id: string };
 
 if (Astro.request.method === "POST") {
   try {
     const pbToken = Astro.cookies.get('pbToken')?.value
     const cookieParams = new URLSearchParams(Astro.cookies.get("pbToken")?.value)
-    const userID = cookieParams.get("user")
+    const userId = cookieParams.get("user")
 
     const formData = await Astro.request.formData()
     const formObject: any = {}
@@ -20,23 +20,23 @@ if (Astro.request.method === "POST") {
         formObject[key] = formData.get(key)
     }
 
-    if (formObject.betID) {
-        const betRecord = await pbPATCH(`/api/collections/bets/records/${formObject.betID}`, {
+    if (formObject.betId) {
+        const betRecord = await pbPATCH(`/api/collections/bets/records/${formObject.betId}`, {
             team_1_score_bet: formObject.team_1_score_bet,
             team_2_score_bet: formObject.team_2_score_bet
         }, pbToken)
 
-        props.betID = betRecord.data.id
+        props.betId = betRecord.data.id
     } else {
 
-      const betRecord = await pbPOST(`/api/collections/bets/records/${formObject.betID}`, {
-          user: userID,
-          game: formObject.gameID,
+      const betRecord = await pbPOST(`/api/collections/bets/records/${formObject.betId}`, {
+          user: userId,
+          game: formObject.gameId,
           team_1_score_bet: formObject.team_1_score_bet,
           team_2_score_bet: formObject.team_2_score_bet
       }, pbToken)
 
-      props.betID = betRecord.data.id
+      props.betId = betRecord.data.id
     }
 
     props = {
@@ -51,15 +51,15 @@ if (Astro.request.method === "POST") {
   }
 }
 
-const { teams, bets, betID, results, gameDate } = props as any
+const { teams, bets, betId, results, gameDate } = props as any
 
 ---
 
 <GameCard
-    gameID={gameID}
+    gameId={gameId}
     teams={teams}
     bets={bets}
-    betID={betID}
+    betId={betId}
     results={results}
     gameDate={gameDate}
 />

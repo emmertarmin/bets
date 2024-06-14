@@ -1,12 +1,12 @@
 ---
 import { getFlag } from "@/utils";
 
-const { gameID, gameStatus, teams, bets, betID, betPoints, results, gameDate, deadlineReached } = Astro.props;
+const { gameId, gameStatus, teams, bets, betId, betPoints, results, gameDate, deadlineReached } = Astro.props;
 ---
 
 <div
     class={`game-card relative border border-slate-500 rounded-xl p-4 hover:transition-all ${gameStatus === 'FINISHED' ? 'bg-slate-800' : 'bg-slate-900 hover:border-purple-600'}`}
-    id={`game-card-${gameID}`}
+    id={`game-card-${gameId}`}
 >
     {/* <p class="text-sm text-slate-300 text-center mb-2">match.type</p> */}
     <p class="text-sm text-slate-300 text-center mb-2">
@@ -18,19 +18,19 @@ const { gameID, gameStatus, teams, bets, betID, betPoints, results, gameDate, de
     >
     </div>
     {
-        !betID && (
+        !betId && (
             <form
-                hx-post={`/partials/games/${gameID}`}
-                hx-target={`#game-card-${gameID}`}
+                hx-post={`/partials/games/${gameId}`}
+                hx-target={`#game-card-${gameId}`}
                 hx-swap="outerHTML"
-                data-game-id={gameID}
-                data-bet-id={betID}
+                data-game-id={gameId}
+                data-bet-id={betId}
             >
-                <input type="hidden" name="gameID" value={gameID} />
+                <input type="hidden" name="gameId" value={gameId} />
                 <input type="hidden" name="teams" value={teams} />
                 <input type="hidden" name="bets" value={bets} />
                 <input type="hidden" name="bets" value={bets} />
-                <input type="hidden" name="betID" value={betID} />
+                <input type="hidden" name="betId" value={betId} />
                 <input type="hidden" name="results" value={results} />
                 <input type="hidden" name="gameDate" value={gameDate} />
                 <div class="flex items-center">
@@ -46,7 +46,7 @@ const { gameID, gameStatus, teams, bets, betID, betPoints, results, gameDate, de
                             name="team_1_score_bet"
                             value={bets?.split(":")[0] || ""}
                             min="0" max="99"
-                            hx-on:change={`document.getElementById("submit-${gameID}").classList.remove("opacity-0")`}
+                            hx-on:change={`document.getElementById("submit-${gameId}").classList.remove("opacity-0")`}
                             disabled={deadlineReached || gameStatus === 'FINISHED'}
                         />
                     </div>
@@ -58,7 +58,7 @@ const { gameID, gameStatus, teams, bets, betID, betPoints, results, gameDate, de
                             name="team_2_score_bet"
                             value={bets?.split(":")[1] || ""}
                             min="0" max="99"
-                            hx-on:change={`document.getElementById("submit-${gameID}").classList.remove("opacity-0")`}
+                            hx-on:change={`document.getElementById("submit-${gameId}").classList.remove("opacity-0")`}
                             disabled={deadlineReached || gameStatus === 'FINISHED'}
                         />
                     </div>
@@ -68,13 +68,13 @@ const { gameID, gameStatus, teams, bets, betID, betPoints, results, gameDate, de
                       {(teams.split(':')[1] || '').toUpperCase()}
                     </div>
                 </div>
-                <input type="hidden" name="gameID" value={gameID} />
+                <input type="hidden" name="gameId" value={gameId} />
                 <div
-                    id={`bet-create-form-${gameID}-result`}
+                    id={`bet-create-form-${gameId}-result`}
                     class="absolute left-3 bottom-3"
                 ></div>
                 <button
-                    type="submit" id={`submit-${gameID}`}
+                    type="submit" id={`submit-${gameId}`}
                     class="opacity-0 transition-opacity absolute right-3 bottom-3 rounded-full w-10 h-10 bg-purple-900 text-white px-4 py-2 flex items-center justify-center"
                 >
                     &check;
@@ -83,19 +83,19 @@ const { gameID, gameStatus, teams, bets, betID, betPoints, results, gameDate, de
         )
     }
     {
-        betID && (
+        betId && (
             <form
-                hx-post={`/partials/games/${gameID}`}
-                hx-target={`#game-card-${gameID}`}
+                hx-post={`/partials/games/${gameId}`}
+                hx-target={`#game-card-${gameId}`}
                 hx-swap="outerHTML"
-                data-game-id={gameID}
-                data-bet-id={betID}
+                data-game-id={gameId}
+                data-bet-id={betId}
             >
-                <input type="hidden" name="gameID" value={gameID} />
+                <input type="hidden" name="gameId" value={gameId} />
                 <input type="hidden" name="teams" value={teams} />
                 <input type="hidden" name="bets" value={bets} />
                 <input type="hidden" name="bets" value={bets} />
-                <input type="hidden" name="betID" value={betID} />
+                <input type="hidden" name="betId" value={betId} />
                 <input type="hidden" name="results" value={results} />
                 <input type="hidden" name="gameDate" value={gameDate} />
                 <div class="flex items-center">
@@ -111,7 +111,7 @@ const { gameID, gameStatus, teams, bets, betID, betPoints, results, gameDate, de
                             name="team_1_score_bet"
                             value={bets?.split(':')[0] || ''}
                             min="0" max="99"
-                            hx-on:change={`document.getElementById("submit-${gameID}").classList.remove("opacity-0")`}
+                            hx-on:change={`document.getElementById("submit-${gameId}").classList.remove("opacity-0")`}
                             disabled={deadlineReached || gameStatus === 'FINISHED'}
                         />
                     </div>
@@ -123,7 +123,7 @@ const { gameID, gameStatus, teams, bets, betID, betPoints, results, gameDate, de
                             name="team_2_score_bet"
                             value={bets?.split(':')[1] || ''}
                             min="0" max="99"
-                            hx-on:change={`document.getElementById("submit-${gameID}").classList.remove("opacity-0")`}
+                            hx-on:change={`document.getElementById("submit-${gameId}").classList.remove("opacity-0")`}
                             disabled={deadlineReached || gameStatus === 'FINISHED'}
                         />
                     </div>
@@ -133,14 +133,14 @@ const { gameID, gameStatus, teams, bets, betID, betPoints, results, gameDate, de
                       {(teams.split(':')[1] || '').toUpperCase()}
                     </div>
                 </div>
-                <input type="hidden" name="gameID" value={gameID} />
-                <input type="hidden" name="betID" value={betID} />
+                <input type="hidden" name="gameId" value={gameId} />
+                <input type="hidden" name="betId" value={betId} />
                 <div
-                    id={`bet-update-form-${gameID}-result`}
+                    id={`bet-update-form-${gameId}-result`}
                     class="absolute left-3 bottom-3"
                 />
                 <button
-                    type="submit" id={`submit-${gameID}`}
+                    type="submit" id={`submit-${gameId}`}
                     class="opacity-0 transition-opacity absolute right-3 bottom-3 rounded-full w-10 h-10 bg-purple-900 text-white px-4 py-2 flex items-center justify-center"
                 >
                     &check;
