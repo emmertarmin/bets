@@ -60,7 +60,7 @@ export async function POST({ request, cookies }: any) {
 
     cookies.set('pbToken', cookieParams.toString(), { httpOnly: false, path: '/' })
 
-    headers['HX-Location'] = '/account'
+    headers['HX-Location'] = '/'
 
     return new Response(
       '<p class="fadeOut">Registration successful</p>', { status: 200, headers });

@@ -9,6 +9,8 @@ const isLoggedIn = !!Astro.cookies.get('pbToken');
 
 const pathname = new URL(Astro.request.url).pathname;
 const currentPath = pathname.slice(1);
+
+import euro2024_logo from '/assets/logos/UEFA_Euro_2024.svg?raw';
 ---
 
 <!doctype html>
@@ -23,12 +25,15 @@ const currentPath = pathname.slice(1);
 	</head>
 	<body>
     {(isLoggedIn) && (
-      <nav class="bg-gradient-to-r from-yellow-400 via-emerald-600 to-slate-900">
+      <nav class="bg-gradient-to-r from-violet-800 to-slate-900">
         <div class="container p-3 lg:px-8 mx-auto">
           <div class="relative flex h-16 items-center justify-between">
             <div class="flex flex-1 items-center justify-center sm:justify-start">
-              <div class="flex flex-shrink-0 items-center">
-                <img class="max-h-16 min-w-16" src="/assets/ec.png" alt="European Championship">
+              <div class="flex flex-shrink-0 items-center flex-col h-16 max-w-10">
+                <img src="/assets/logos/euro2024.png" alt="European Championship">
+                <div aria-label="Euro 2024 Logo">
+                  <Fragment set:html={euro2024_logo} />
+                </div>
               </div>
               <div class="sm:ml-6">
                 <ul class="flex items-center sm:space-x-4">
@@ -103,7 +108,7 @@ const currentPath = pathname.slice(1);
   }
   nav {
     a {
-      @apply no-underline transition;
+      @apply no-underline transition-colors;
       &.active {
         @apply bg-violet-800 text-white;
       }
@@ -138,10 +143,10 @@ const currentPath = pathname.slice(1);
     0% { opacity: .6; }
     5% { opacity: 1; }
     50% { opacity: 1; }
-    100% { opacity: .6; }
+    100% { opacity: .4; }
   }
   .fadeOut {
-    animation: fadeOut 2s forwards;
+    animation: fadeOut 3s forwards;
   }
   pre {
     display: block;
@@ -161,6 +166,14 @@ const currentPath = pathname.slice(1);
       /* border: 1px solid rgb(var(--accent-light)) !important; */
     }
   }
+  svg {
+    max-width: 100% !important;
+    height: auto !important;
+    path {
+      fill: #ffffff;
+    }
+  }
+
 </style>
 
 <script is:inline>
