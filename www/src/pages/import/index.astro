@@ -1,4 +1,6 @@
 ---
+
+import { pb } from '@/services/pocketbase';
 import { isAuthorizedAdmin } from '@/utils';
 import Layout from '@/layouts/Layout.astro';
 
@@ -8,26 +10,42 @@ if (!(Astro.cookies.has('pb_auth') && isAuthorizedAdmin(Astro.request.headers.ge
     return Astro.redirect("/import/login", 303);
 }
 
+// do Logout
+if (Astro.request.method === "DELETE") {
+    const headers: any = { "Content-Type": "text/html" };
+    // delete fd_token cookie
+    headers['set-cookie'] = 'fd_token=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;HttpOnly;SameSite=Strict';
+    // set HX Location redirect
+    headers['HX-Location'] = '/import/login';
+    // clear the auth store on failed refresh
+    pb.authStore.clear();
+    const response = new Response('<p>You have been logged out</p>', { headers: headers });
+    response.headers.append('set-cookie', pb.authStore.exportToCookie({ secure: false }));
+    return response;
+}
+
 ---
 <Layout title='Import Dashboard'>
-  <main class='h-screen w-screen flex pt-[10%] justify-center bg-gradient-to-r from-violet-900 to-slate-900 text-white'>
-    <div class='flex flex-col items-center w-96'>
+  <main class='flex pt-[10%] px-3 justify-center'>
+    <div class='flex flex-col items-center'>
         <h1 class='text-5xl mb-5'>
             Admin Import
         </h1>
         <div class='mb-10 mt-4' id="response">
             Choose from available Tasks
         </div>
-        <button type='submit' hx-get="/api/import/matches" hx-target="#response" class='bg-gradient-to-r from-purple-600 to-violet-900 hover:from-green-700 hover:to-lime-500 w-full rounded-md mt-3 h-12'>
-          <span class="loader htmx-indicator"></span><span class="htmx-indicator-txt">Import Scheduled Matches</span>
-        </button>
-        <button type='submit' hx-get="/api/import/scores" hx-target="#response" class='bg-gradient-to-r from-purple-600 to-violet-900 hover:from-green-700 hover:to-lime-500 w-full rounded-md mt-3 h-12'>
-          <span class="loader htmx-indicator"></span><span class="htmx-indicator-txt">Update Scores</span>
-        </button>
-        <button type='submit' hx-get="/api/import/flags" hx-target="#response" class='bg-gradient-to-r from-purple-600 to-violet-900 hover:from-green-700 hover:to-lime-500 w-full rounded-md mt-3 h-12'>
-          <span class="loader htmx-indicator"></span><span class="htmx-indicator-txt">Download Country flags</span>
-        </button>
-        <button type='submit' hx-get="/api/import/logout" hx-target="#response" class='bg-gradient-to-r from-violet-600 to-red-900 hover:from-red-600 hover:to-red-800 w-full rounded-md mt-10 h-12'>Logout</button>
+        <div class="flex flex-wrap justify-center items-center gap-5 mt-3 mb-10">
+          <button type='submit' hx-get="/api/import/matches" hx-target="#response" class='w-full sm:w-96 bg-gradient-to-r from-purple-600 to-violet-900 hover:from-green-700 hover:to-lime-500 rounded-md px-3 h-16'>
+            <span class="loader htmx-indicator"></span><span class="htmx-indicator-txt">Import Scheduled Matches</span>
+          </button>
+          <button type='submit' hx-post="/api/import/scores" hx-target="#response" class='w-full sm:w-96 bg-gradient-to-r from-purple-600 to-violet-900 hover:from-green-700 hover:to-lime-500 rounded-md px-3 h-16'>
+            <span class="loader htmx-indicator"></span><span class="htmx-indicator-txt">Update Scores</span>
+          </button>
+          <button type='submit' hx-get="/api/import/flags" hx-target="#response" class='w-full sm:w-96 bg-gradient-to-r from-purple-600 to-violet-900 hover:from-green-700 hover:to-lime-500 rounded-md px-3 h-16'>
+            <span class="loader htmx-indicator"></span><span class="htmx-indicator-txt">Download Country flags</span>
+          </button>
+        </div>
+        <button type='submit' hx-delete="/import" hx-target="#response" class='w-full sm:w-96 bg-gradient-to-r from-violet-600 to-red-900 hover:from-red-600 hover:to-red-800 rounded-md px-3 h-12'>Admin Logout</button>
     </div>
   </main>
 </Layout>
