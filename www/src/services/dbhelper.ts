@@ -7,8 +7,6 @@ export function getUserId(cookie: string) {
 }
 
 export const getUser = async(pbToken: string) => {
-    const cookieParams = new URLSearchParams(pbToken);
-    const user = cookieParams.get("user") || '';
     return await pbGET(`/api/collections/users/records/${getUserId(pbToken)}`, {}
     , pbToken).then((res) => res.data);
 }

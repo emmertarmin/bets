@@ -105,26 +105,3 @@ const { gameId, gameStatus, teams, bets, betId, betPoints, results, gameDate, de
         @apply filter saturate-100;
     }
 </style>
-
-<script>
-document.body.addEventListener("htmx:after-swap", function(evt){
-    gameCardCounter(evt.target);
-});
-function gameCardCounter(c) {
-  const now = new Date().getTime();
-  const gameContainer = c.getElementsByClassName("game")[0];
-  const matchDate = new Date(gameContainer.dataset.date);
-  const gameCountdown = c.getElementsByClassName("game-countdown")[0];
-  const dateDiff = matchDate.getTime() - 3600000 - now;
-  // gt than 1 hour and less than 72 hours
-  if (gameCountdown && dateDiff > 0 && dateDiff < 259200000) {
-    showCountdown(matchDate.getTime(), gameCountdown, { diff: 3600000, post_text: " until bet is closing"});
-  } else if (gameCountdown && dateDiff <= 0) {
-    gameCountdown.innerHTML = "Bet is closed";
-  }
-}
-const gameCards = document.getElementsByClassName("game-card");
-for (const c of gameCards) {
-    gameCardCounter(c);
-};
-</script>
