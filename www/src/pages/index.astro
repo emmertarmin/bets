@@ -20,10 +20,10 @@ const users = await pbGET(
   <h1>Leaderboard</h1>
 
   <center>
-    <table>
+    <table class="min-w-full sm:min-w-96">
       <thead>
         <tr>
-          <th>Name</th>
+          <th class="text-left">Name</th>
           <th>Points</th>
         </tr>
       </thead>
@@ -31,7 +31,7 @@ const users = await pbGET(
         {users.map((user: any, index: number) => (
           <tr class={user.id === currentUser.id ? "text-purple-400 bg-slate-900 font-bold" : ""}>
             <td title={user.email}>{user.username} {(index === 0 && user.points > 0) && '🏆'}</td>
-            <td>{user.points}</td>
+            <td class="text-center">{user.points}</td>
           </tr>
         ))}
       </tbody>

@@ -46,6 +46,8 @@ const { gameID, gameStatus, teams, bets, betID, betPoints, results, gameDate } =
                             name="team_1_score_bet"
                             value={bets?.split(":")[0] || ""}
                             disabled={gameStatus === 'FINISHED'}
+                            min="0" max="99"
+                            hx-on:change={`document.getElementById("submit-${gameID}").classList.remove("opacity-0")`}
                         />
                     </div>
                     <div class="px-3">:</div>
@@ -56,6 +58,8 @@ const { gameID, gameStatus, teams, bets, betID, betPoints, results, gameDate } =
                             name="team_2_score_bet"
                             value={bets?.split(":")[1] || ""}
                             disabled={gameStatus === 'FINISHED'}
+                            min="0" max="99"
+                            hx-on:change={`document.getElementById("submit-${gameID}").classList.remove("opacity-0")`}
                         />
                     </div>
                     <div class="ml-4 text-center">
@@ -70,7 +74,7 @@ const { gameID, gameStatus, teams, bets, betID, betPoints, results, gameDate } =
                     class="absolute left-3 bottom-3"
                 ></div>
                 <button
-                    type="submit"
+                    type="submit" id={`submit-${gameID}`}
                     class="opacity-0 transition-opacity absolute right-3 bottom-3 rounded-full w-10 h-10 bg-purple-900 text-white px-4 py-2 flex items-center justify-center"
                 >
                     &check;
@@ -107,6 +111,8 @@ const { gameID, gameStatus, teams, bets, betID, betPoints, results, gameDate } =
                             name="team_1_score_bet"
                             value={bets?.split(':')[0] || ''}
                             disabled={gameStatus === 'FINISHED'}
+                            min="0" max="99"
+                            hx-on:change={`document.getElementById("submit-${gameID}").classList.remove("opacity-0")`}
                         />
                     </div>
                     <div class="px-3">:</div>
@@ -117,6 +123,8 @@ const { gameID, gameStatus, teams, bets, betID, betPoints, results, gameDate } =
                             name="team_2_score_bet"
                             value={bets?.split(':')[1] || ''}
                             disabled={gameStatus === 'FINISHED'}
+                            min="0" max="99"
+                            hx-on:change={`document.getElementById("submit-${gameID}").classList.remove("opacity-0")`}
                         />
                     </div>
                     <div class="ml-4 text-center">
@@ -132,7 +140,7 @@ const { gameID, gameStatus, teams, bets, betID, betPoints, results, gameDate } =
                     class="absolute left-3 bottom-3"
                 />
                 <button
-                    type="submit"
+                    type="submit" id={`submit-${gameID}`}
                     class="opacity-0 transition-opacity absolute right-3 bottom-3 rounded-full w-10 h-10 bg-purple-900 text-white px-4 py-2 flex items-center justify-center"
                 >
                     &check;
@@ -168,18 +176,15 @@ const { gameID, gameStatus, teams, bets, betID, betPoints, results, gameDate } =
     .game-card:hover .flag {
         @apply filter saturate-100;
     }
+    /* hide number arrows */
+    /* Chrome, Safari, Edge, Opera */
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+    /* Firefox */
+    input[type=number] {
+        -moz-appearance: textfield;
+    }
 </style>
-
-<script>
-    // Show submit button when input is changed
-    const inputs = document.querySelectorAll('input[name=team_1_score_bet],input[name=team_2_score_bet]')
-    inputs.forEach((input) => {
-        input.addEventListener('input', (e) => {
-            const form = (e?.target as HTMLElement)?.closest('form')
-            if (form) {
-                const submitButton = form.querySelector('button[type=submit')
-                submitButton?.classList.remove('opacity-0')
-            }
-        })
-    })
-</script>
