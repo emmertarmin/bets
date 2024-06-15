@@ -118,11 +118,15 @@ const { gameId, gameStatus, teams, bets, betId, betPoints, results, gameDate, de
             if (diff < 0 && diff > -1000 * 60 * 60) {
                 countdown.innerHTML = 'Bets closed';
                 if (interval) clearInterval(interval);
-            } else if (diff < 24 * 1000 * 60 * 60) {
+            } else if (diff < 24 * 1000 * 60 * 60 && gameDate.substring(0, 10) === now.toISOString().substring(0, 10)) {
                 const hours = Math.floor(diff / 1000 / 60 / 60);
                 const minutes = Math.floor(diff / 1000 / 60) % 60;
                 const seconds = Math.floor(diff / 1000) % 60;
                 countdown.innerHTML = `Bets close in ${hours}:${pad(minutes)}:${pad(seconds)}`;
+            } else if (diff < 48 * 1000 * 60 * 60) {
+                countdown.innerHTML = '1 Day left';
+            } else if (diff < 72 * 1000 * 60 * 60) {
+                countdown.innerHTML = '2 Days left';
             }
         }
         updateCountdown();
