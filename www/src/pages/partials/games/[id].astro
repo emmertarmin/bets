@@ -1,6 +1,6 @@
 ---
 
-import GameCard from '@/components/GameCard.astro'
+import GameCardForm from '@/components/GameCardForm.astro';
 import { pbPOST } from '@/services/pocketbase'
 import { pbPATCH } from '@/services/pocketbase'
 
@@ -55,7 +55,7 @@ const { teams, bets, betId, results, gameDate } = props as any
 
 ---
 
-<GameCard
+<GameCardForm
     gameId={gameId}
     teams={teams}
     bets={bets}

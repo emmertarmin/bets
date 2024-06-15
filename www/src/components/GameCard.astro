@@ -1,125 +1,64 @@
 ---
-import { getFlag } from "@/utils";
+import GameCardForm from "./GameCardForm.astro";
 
 const {
-    gameId,
-    gameStatus,
-    teams,
-    bets,
-    betId,
-    betPoints,
-    results,
-    gameDate,
-    deadlineReached,
+  gameId,
+  gameStatus,
+  teams,
+  bets,
+  betId,
+  betPoints,
+  results,
+  gameDate,
+  deadlineReached,
 } = Astro.props;
 ---
 
 <div
-    class={`game-card relative border border-slate-500 rounded-xl p-4 hover:transition-all ${gameStatus === "FINISHED" ? "bg-slate-800" : "bg-slate-900 hover:border-purple-600"}`}
-    id={`game-card-${gameId}`}
+  class={`game-card relative border border-slate-500 rounded-xl p-4 hover:transition-all ${gameStatus === "FINISHED" ? "bg-slate-800" : "bg-slate-900 hover:border-purple-600"}`}
+  id={`game-card-${gameId}`}
 >
-    {/* <p class="text-sm text-slate-300 text-center mb-2">match.type</p> */}
-    <p class="text-sm text-slate-300 text-center mb-2">
-        {new Date(gameDate).toLocaleString("de-DE").replace(/:\d\d$/, "")}
-    </p>
-    <div
-        class="game text-center text-sm text-slate-300 mb-2"
-        data-date={gameDate}
-    >
-    </div>
-    <form
-        hx-post={`/partials/games/${gameId}`}
-        hx-target={`#game-card-${gameId}`}
-        hx-swap="outerHTML"
-        data-game-id={gameId}
-        data-bet-id={betId}
-    >
-        <input type="hidden" name="gameId" value={gameId} />
-        <input type="hidden" name="teams" value={teams} />
-        <input type="hidden" name="bets" value={bets} />
-        <input type="hidden" name="betId" value={betId} />
-        <input type="hidden" name="results" value={results} />
-        <input type="hidden" name="gameDate" value={gameDate} />
-        <div class="flex items-center justify-center">
-            <div class="mr-4 text-center">
-                <span class="flag">{getFlag(teams.split(":")[0] || "")}</span>
-                <br />
-                {(teams.split(":")[0] || "").toUpperCase()}
-            </div>
-            <div>
-                <input
-                    type="number"
-                    class="text-4xl text-center w-full max-w-20"
-                    name="team_1_score_bet"
-                    value={bets?.split(":")[0] || ""}
-                    min="0"
-                    max="99"
-                    hx-on:change={`document.getElementById("submit-${gameId}").classList.remove("opacity-0")`}
-                    disabled={deadlineReached || gameStatus === "FINISHED"}
-                />
-            </div>
-            <div class="px-3">:</div>
-            <div>
-                <input
-                    type="number"
-                    class="text-4xl text-center w-full max-w-20"
-                    name="team_2_score_bet"
-                    value={bets?.split(":")[1] || ""}
-                    min="0"
-                    max="99"
-                    hx-on:change={`document.getElementById("submit-${gameId}").classList.remove("opacity-0")`}
-                    disabled={deadlineReached || gameStatus === "FINISHED"}
-                />
-            </div>
-            <div class="ml-4 text-center">
-                <span class="flag">{getFlag(teams.split(":")[1] || "")}</span>
-                <br />
-                {(teams.split(":")[1] || "").toUpperCase()}
-            </div>
-        </div>
-        <div
-            id={`bet-update-form-${gameId}-result`}
-            class="absolute left-3 bottom-3"
-        >
-        </div>
-        <button
-            type="submit"
-            id={`submit-${gameId}`}
-            class="opacity-0 transition-opacity absolute right-3 bottom-3 rounded-full w-10 h-10 bg-purple-900 text-white px-4 py-2 flex items-center justify-center"
-        >
-            &check;
-        </button>
-    </form>
-    {
-        gameStatus === "FINISHED" ? (
-            <div class="flex items-center justify-center mt-4">
-                <>
-                    <div class="text-2xl px-3">{results.split(":")[0]}</div>
-                    <div class="px-3">:</div>
-                    <div class="text-2xl px-3">{results.split(":")[1]}</div>
-                </>
-            </div>
-        ) : (
-            <div
-                class="h-8 mt-4 game-countdown text-center text-sm text-red-300"
-                id={`game-countdown-${gameId}`}
-            />
-        )
-    }
-    {
-        gameStatus === "FINISHED" && (
-            <div class="absolute bottom-3 left-3 text-2xl bg-purple-900 rounded-full w-10 h-10 flex items-center justify-center">
-                {betPoints}
-            </div>
-        )
-    }
+  {/* <p class="text-sm text-slate-300 text-center mb-2">match.type</p> */}
+  <p class="text-sm text-slate-300 text-center mb-2">
+    {new Date(gameDate).toLocaleString("de-DE").replace(/:\d\d$/, "")}
+  </p>
+  <div
+    class="game text-center text-sm text-slate-300 mb-2"
+    data-date={gameDate}
+  >
+  </div>
+  <GameCardForm
+    gameId={gameId}
+    gameStatus={gameStatus}
+    teams={teams}
+    bets={bets}
+    betId={betId}
+    betPoints={betPoints}
+    results={results}
+    gameDate={gameDate}
+    deadlineReached={deadlineReached}
+  />
+  {
+    gameStatus === "FINISHED" ? (
+      <div class="flex items-center justify-center mt-4">
+        <>
+          <div class="text-2xl px-3">{results.split(":")[0]}</div>
+          <div class="px-3">:</div>
+          <div class="text-2xl px-3">{results.split(":")[1]}</div>
+        </>
+      </div>
+    ) : (
+      <div
+        class="h-8 mt-4 game-countdown text-center text-sm text-red-300"
+        id={`game-countdown-${gameId}`}
+      />
+    )
+  }
+  {
+    gameStatus === "FINISHED" && (
+      <div class="absolute bottom-3 left-3 text-2xl bg-purple-900 rounded-full w-10 h-10 flex items-center justify-center">
+        {betPoints}
+      </div>
+    )
+  }
 </div>
-
-<style>
-    .flag {
-        @apply text-3xl filter saturate-50 transition-all;
-    }
-    .game-card:hover .flag {
-        @apply filter saturate-100;
-    }
-</style>

@@ -1,75 +1,109 @@
 ---
 interface Props {
-	title: string;
+  title: string;
 }
 
 const { title } = Astro.props;
 
-const isLoggedIn = (Astro.cookies.has('pbToken') && new URLSearchParams(Astro.cookies.get('pbToken')?.value).has("token"));
+const isLoggedIn =
+  Astro.cookies.has("pbToken") &&
+  new URLSearchParams(Astro.cookies.get("pbToken")?.value).has("token");
 
 const pathname = new URL(Astro.request.url).pathname;
 const currentPath = pathname.slice(1);
 
-import euro2024_logo from '/assets/logos/UEFA_Euro_2024.svg?raw';
+import euro2024_logo from "/assets/logos/UEFA_Euro_2024.svg?raw";
 ---
 
 <!doctype html>
-<html lang="en" class="bg-gradient-to-r from-violet-900 to-slate-900 text-white min-h-screen">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="description" content="Astro description" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="generator" content={Astro.generator} />
-		<title>{title}</title>
-	</head>
-	<body>
-    {(isLoggedIn) && (
-      <nav class="bg-gradient-to-r from-yellow-400 via-emerald-600 to-slate-900">
-        <div class="container p-3 lg:px-8 mx-auto">
-          <div class="relative flex h-16 items-center justify-between">
-            <div class="flex flex-1 items-center justify-center sm:justify-start">
-              <div class="flex flex-shrink-0 items-center justify-between flex-col h-16 max-w-10 sm:max-w-12">
-                <img class="max-w-9 sm:max-w-10 max-h-10" src="/assets/logos/euro2024.png" alt="European Championship">
-                <div aria-label="Euro 2024 Logo">
-                  <Fragment set:html={euro2024_logo} />
+<html
+  lang="en"
+  class="bg-gradient-to-r from-violet-900 to-slate-900 text-white min-h-screen"
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content="Astro description" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+  </head>
+  <body>
+    {
+      isLoggedIn && (
+        <nav class="bg-gradient-to-r from-yellow-400 via-emerald-600 to-slate-900">
+          <div class="container p-3 lg:px-8 mx-auto">
+            <div class="relative flex h-16 items-center justify-between">
+              <div class="flex flex-1 items-center justify-center sm:justify-start">
+                <div class="flex flex-shrink-0 items-center justify-between flex-col h-16 max-w-10 sm:max-w-12">
+                  <img
+                    class="max-w-9 sm:max-w-10 max-h-10"
+                    src="/assets/logos/euro2024.png"
+                    alt="European Championship"
+                  />
+                  <div aria-label="Euro 2024 Logo">
+                    <Fragment set:html={euro2024_logo} />
+                  </div>
+                </div>
+                <div class="ml-1 sm:ml-6">
+                  <ul class="flex items-center sm:space-x-4">
+                    <li>
+                      <a class={currentPath === "" ? "active" : ""} href="/">
+                        Leaderboard
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        class={currentPath === "bets" ? "active" : ""}
+                        href="/bets"
+                      >
+                        Bets
+                      </a>
+                    </li>
+                  </ul>
                 </div>
               </div>
-              <div class="ml-1 sm:ml-6">
-                <ul class="flex items-center sm:space-x-4">
-                  <li><a class={currentPath === "" ? "active" : "" } href="/">Leaderboard</a></li>
-                  <li><a class={currentPath === "bets" ? "active" : "" } href="/bets">Bets</a></li>
-                </ul>
+              <div class="relative mx-1 sm:mx-3 emoji">
+                <a
+                  class={currentPath === "account" ? "active" : ""}
+                  href="/account"
+                  title="Account"
+                >
+                  &#x1F469;
+                </a>
+              </div>
+              <div class="relative emoji">
+                <a href="#" hx-delete="/account" title="Logout">
+                  &#x1F44B;
+                </a>
               </div>
             </div>
-            <div class="relative mx-1 sm:mx-3 emoji"><a class={currentPath === "account" ? "active" : "" } href="/account" title="Account">&#x1F469;</a></div>
-            <div class="relative emoji"><a href="#" hx-delete="/account" title="Logout">&#x1F44B;</a></div>
           </div>
-        </div>
-      </nav>
-    )}
+        </nav>
+      )
+    }
     <div class="container mx-auto mt-5 mb-5">
       <slot />
     </div>
-	</body>
+  </body>
 </html>
 <style is:global>
-	:root {
-		--accent: 136, 58, 234;
-		--accent-light: 224, 204, 250;
-		--accent-dark: 49, 10, 101;
-		--accent-gradient: linear-gradient(
-			45deg,
-			rgb(var(--accent)),
-			rgb(var(--accent-light)) 30%,
-			white 60%
-		);
+  :root {
+    --accent: 136, 58, 234;
+    --accent-light: 224, 204, 250;
+    --accent-dark: 49, 10, 101;
+    --accent-gradient: linear-gradient(
+      45deg,
+      rgb(var(--accent)),
+      rgb(var(--accent-light)) 30%,
+      white 60%
+    );
     --background: #13151a;
     --background-light: #1e2025;
-	}
-	html {
-		font-family: system-ui, sans-serif;
-	}
+  }
+  html {
+    font-family: system-ui, sans-serif;
+  }
 
   /* hide number arrows */
   /* Chrome, Safari, Edge, Opera */
@@ -79,10 +113,13 @@ import euro2024_logo from '/assets/logos/UEFA_Euro_2024.svg?raw';
     margin: 0;
   }
   /* Firefox */
-  input[type=number] {
+  input[type="number"] {
     -moz-appearance: textfield;
   }
-  input[type="number"],input[type="text"],input[type="email"],input[type="password"] {
+  input[type="number"],
+  input[type="text"],
+  input[type="email"],
+  input[type="password"] {
     @apply py-1 bg-slate-600 border-2 border-transparent rounded-md focus:border-purple-400 ring-0 outline-none;
   }
   h1 {
@@ -94,17 +131,17 @@ import euro2024_logo from '/assets/logos/UEFA_Euro_2024.svg?raw';
   h3 {
     @apply text-2xl mb-3 font-bold;
   }
-	code {
-		font-family:
-			Menlo,
-			Monaco,
-			Lucida Console,
-			Liberation Mono,
-			DejaVu Sans Mono,
-			Bitstream Vera Sans Mono,
-			Courier New,
-			monospace;
-	}
+  code {
+    font-family:
+      Menlo,
+      Monaco,
+      Lucida Console,
+      Liberation Mono,
+      DejaVu Sans Mono,
+      Bitstream Vera Sans Mono,
+      Courier New,
+      monospace;
+  }
   a {
     text-decoration: underline;
     &:hover {
@@ -145,26 +182,35 @@ import euro2024_logo from '/assets/logos/UEFA_Euro_2024.svg?raw';
     user-select: none;
   }
   @keyframes fadeOut {
-    0% { opacity: .6; }
-    5% { opacity: 1; }
-    50% { opacity: 1; }
-    100% { opacity: .4; }
+    0% {
+      opacity: 0.6;
+    }
+    5% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0.4;
+    }
   }
   .fadeOut {
     animation: fadeOut 3s forwards;
   }
   pre {
     display: block;
-    padding: .5rem;
-    opacity: .5;
+    padding: 0.5rem;
+    opacity: 0.5;
   }
   table {
     border-collapse: collapse;
     th {
       @apply text-xl font-normal border-b border-slate-400 dark:border-slate-700;
     }
-    td, th {
-      padding: .5rem;
+    td,
+    th {
+      padding: 0.5rem;
     }
     td {
       @apply border-b border-slate-600 dark:border-slate-900;
@@ -179,17 +225,22 @@ import euro2024_logo from '/assets/logos/UEFA_Euro_2024.svg?raw';
     fill: #ffffff;
   }
 
-
+  .flag {
+    @apply text-3xl filter saturate-50 transition-all;
+  }
+  .game-card:hover .flag {
+    @apply filter saturate-100;
+  }
 </style>
 
 <script is:inline>
-document.body.addEventListener('htmx:beforeOnLoad', function (evt) {
-  if (evt.detail.xhr.status === 400) {
-    // allow 400 responses to swap as we are using this as a signal that
-    // a form was submitted with bad data and want to rerender with the
-    // error messages
-    evt.detail.shouldSwap = true;
-    evt.detail.isError = false;
-  }
-});
+  document.body.addEventListener("htmx:beforeOnLoad", function (evt) {
+    if (evt.detail.xhr.status === 400) {
+      // allow 400 responses to swap as we are using this as a signal that
+      // a form was submitted with bad data and want to rerender with the
+      // error messages
+      evt.detail.shouldSwap = true;
+      evt.detail.isError = false;
+    }
+  });
 </script>

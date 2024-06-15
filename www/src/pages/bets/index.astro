@@ -46,19 +46,17 @@ const bets = await getUserBets(pbToken);
 </Layout>
 
 <script define:vars={{ games: games.map((g: any) => ({id: g.id, date: g.date})) }}>
-  games.forEach((game) => {
-    const el = document.getElementById(`game-countdown-${game.id}`);
-    let interval;
-    if (el) {
-      function updateCountdown() {
-        const pad = (n) => (n < 10 ? `0${n}` : n);
+  const pad = (n) => (n < 10 ? `0${n}` : n);
+  function updateCountdown() {
+    games.forEach((game) => {
+      const el = document.getElementById(`game-countdown-${game.id}`);
+      if (el) {
         const now = new Date();
         const diff = new Date(game.date) - now - 1000 * 60 * 60;
         if (now > new Date(game.date)) {
-          if (interval) clearInterval(interval);
+          el.innerHTML = "";
         } else if (diff < 0 && diff > -1000 * 60 * 60) {
           el.innerHTML = "Bets closed";
-          if (interval) clearInterval(interval);
         } else if (
           diff < 24 * 1000 * 60 * 60 &&
           game.date.substring(0, 10) === now.toISOString().substring(0, 10)
@@ -71,12 +69,12 @@ const bets = await getUserBets(pbToken);
           el.innerHTML = "1 Day left";
         } else if (diff < 72 * 1000 * 60 * 60) {
           el.innerHTML = "2 Days left";
+        } else {
+          el.innerHTML = "";
         }
       }
-      updateCountdown();
-      interval = setInterval(() => {
-        updateCountdown();
-      }, 1000);
-    }
-  });
+    });
+  }
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
 </script>
