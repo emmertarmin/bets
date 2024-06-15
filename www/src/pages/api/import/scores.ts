@@ -4,14 +4,18 @@ import { pb } from "@/services/pocketbase";
 // import json_data from "@/data/test_matches_finished.json";
 import type { APIContext } from 'astro';
 
-const pb_status: any[] = [];
-const headers: any = { "Content-Type": "text/html" };
-const today = new Date(Date.now());
-const date_filter = today.toISOString().split("T");
+let pb_status: any[], headers: any;
 
 export async function POST({ request, cookies }: APIContext) {
 
-  // const query_params = new URL(request.url).searchParams;
+  // clear pb_status;
+  pb_status = [];
+  // set default header
+  headers = { "Content-Type": "html/text" };
+
+  const today = new Date(Date.now());
+  const date_filter = today.toISOString().split("T");
+    // const query_params = new URL(request.url).searchParams;
   // console.log("Request params:", query_params);
 
   if (cookies.has('pb_auth')) {
