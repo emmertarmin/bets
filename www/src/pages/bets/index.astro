@@ -54,7 +54,9 @@ const bets = await getUserBets(pbToken);
         const pad = (n) => (n < 10 ? `0${n}` : n);
         const now = new Date();
         const diff = new Date(game.date) - now - 1000 * 60 * 60;
-        if (diff < 0 && diff > -1000 * 60 * 60) {
+        if (now > new Date(game.date)) {
+          if (interval) clearInterval(interval);
+        } else if (diff < 0 && diff > -1000 * 60 * 60) {
           el.innerHTML = "Bets closed";
           if (interval) clearInterval(interval);
         } else if (
