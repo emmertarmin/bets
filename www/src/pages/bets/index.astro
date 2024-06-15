@@ -1,42 +1,80 @@
 ---
-import Layout from "@/layouts/Layout.astro"
-import GameCard from "@/components/GameCard.astro"
+import Layout from "@/layouts/Layout.astro";
+import GameCard from "@/components/GameCard.astro";
 import { getUser, getMatches, getUserBets } from "@/services/dbhelper";
 
-const pbToken = Astro.cookies.get("pbToken")?.value || '';
+const pbToken = Astro.cookies.get("pbToken")?.value || "";
 
 const userData = await getUser(pbToken);
 const games = await getMatches(pbToken);
 const bets = await getUserBets(pbToken);
-
 ---
 
 <Layout title="Games">
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 lg:gap-8 px-5 lg:px-8">
-    {games
-      .filter((game: any) => game.expand?.team_1.name && game.expand?.team_2.name)
-      .map((game: any) => {
-        const bet = bets.find((bet: any) => bet.game === game.id)
-        const deadline = new Date(game.date)
-        deadline.setHours(deadline.getHours() - 1)
-        const deadlineReached = deadline < new Date()
-        return (
-          <GameCard
-            gameId={game.id}
-            gameStatus={game.status}
-            teams={`${game.expand?.team_1.country_code_3}:${game.expand?.team_2.country_code_3}`}
-            bets={`${bet?.team_1_score_bet}:${bet?.team_2_score_bet}`}
-            betId={bet?.id}
-            betPoints={bet?.points}
-            results={`${game.team_1_score}:${game.team_2_score}`}
-            gameDate={new Date(game.date).toISOString()}
-            deadlineReached={deadlineReached}
-          />
+  <div
+    class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 lg:gap-8 px-5 lg:px-8"
+  >
+    {
+      games
+        .filter(
+          (game: any) => game.expand?.team_1.name && game.expand?.team_2.name,
         )
-      })
+        .map((game: any) => {
+          const bet = bets.find((bet: any) => bet.game === game.id);
+          const deadline = new Date(game.date);
+          deadline.setHours(deadline.getHours() - 1);
+          const deadlineReached = deadline < new Date();
+          return (
+            <GameCard
+              gameId={game.id}
+              gameStatus={game.status}
+              teams={`${game.expand?.team_1.country_code_3}:${game.expand?.team_2.country_code_3}`}
+              bets={`${bet?.team_1_score_bet}:${bet?.team_2_score_bet}`}
+              betId={bet?.id}
+              betPoints={bet?.points}
+              results={`${game.team_1_score}:${game.team_2_score}`}
+              gameDate={new Date(game.date).toISOString()}
+              deadlineReached={deadlineReached}
+            />
+          );
+        })
     }
   </div>
   <!-- <pre>{JSON.stringify(userData, null, 2)}</pre> -->
   <!-- <pre>{JSON.stringify(games, null, 2)}</pre> -->
   <!-- <pre>{JSON.stringify(bets, null, 2)}</pre> -->
 </Layout>
+
+<script define:vars={{ games: games.map((g: any) => ({id: g.id, date: g.date})) }}>
+  games.forEach((game) => {
+    const el = document.getElementById(`game-countdown-${game.id}`);
+    let interval;
+    if (el) {
+      function updateCountdown() {
+        const pad = (n) => (n < 10 ? `0${n}` : n);
+        const now = new Date();
+        const diff = new Date(game.date) - now - 1000 * 60 * 60;
+        if (diff < 0 && diff > -1000 * 60 * 60) {
+          el.innerHTML = "Bets closed";
+          if (interval) clearInterval(interval);
+        } else if (
+          diff < 24 * 1000 * 60 * 60 &&
+          game.date.substring(0, 10) === now.toISOString().substring(0, 10)
+        ) {
+          const hours = Math.floor(diff / 1000 / 60 / 60);
+          const minutes = Math.floor(diff / 1000 / 60) % 60;
+          const seconds = Math.floor(diff / 1000) % 60;
+          el.innerHTML = `Bets close in ${hours}:${pad(minutes)}:${pad(seconds)}`;
+        } else if (diff < 48 * 1000 * 60 * 60) {
+          el.innerHTML = "1 Day left";
+        } else if (diff < 72 * 1000 * 60 * 60) {
+          el.innerHTML = "2 Days left";
+        }
+      }
+      updateCountdown();
+      interval = setInterval(() => {
+        updateCountdown();
+      }, 1000);
+    }
+  });
+</script>

@@ -1,16 +1,26 @@
 ---
 import { getFlag } from "@/utils";
 
-const { gameId, gameStatus, teams, bets, betId, betPoints, results, gameDate, deadlineReached } = Astro.props;
+const {
+    gameId,
+    gameStatus,
+    teams,
+    bets,
+    betId,
+    betPoints,
+    results,
+    gameDate,
+    deadlineReached,
+} = Astro.props;
 ---
 
 <div
-    class={`game-card relative border border-slate-500 rounded-xl p-4 hover:transition-all ${gameStatus === 'FINISHED' ? 'bg-slate-800' : 'bg-slate-900 hover:border-purple-600'}`}
+    class={`game-card relative border border-slate-500 rounded-xl p-4 hover:transition-all ${gameStatus === "FINISHED" ? "bg-slate-800" : "bg-slate-900 hover:border-purple-600"}`}
     id={`game-card-${gameId}`}
 >
     {/* <p class="text-sm text-slate-300 text-center mb-2">match.type</p> */}
     <p class="text-sm text-slate-300 text-center mb-2">
-        {new Date(gameDate).toLocaleString('de-DE').replace(/:\d\d$/, '')}
+        {new Date(gameDate).toLocaleString("de-DE").replace(/:\d\d$/, "")}
     </p>
     <div
         class="game text-center text-sm text-slate-300 mb-2"
@@ -32,19 +42,20 @@ const { gameId, gameStatus, teams, bets, betId, betPoints, results, gameDate, de
         <input type="hidden" name="gameDate" value={gameDate} />
         <div class="flex items-center justify-center">
             <div class="mr-4 text-center">
-                <span class="flag">{getFlag(teams.split(':')[0] || '')}</span>
-                <br/>
-                {(teams.split(':')[0] || '').toUpperCase()}
+                <span class="flag">{getFlag(teams.split(":")[0] || "")}</span>
+                <br />
+                {(teams.split(":")[0] || "").toUpperCase()}
             </div>
             <div>
                 <input
                     type="number"
                     class="text-4xl text-center w-full max-w-20"
                     name="team_1_score_bet"
-                    value={bets?.split(':')[0] || ''}
-                    min="0" max="99"
+                    value={bets?.split(":")[0] || ""}
+                    min="0"
+                    max="99"
                     hx-on:change={`document.getElementById("submit-${gameId}").classList.remove("opacity-0")`}
-                    disabled={deadlineReached || gameStatus === 'FINISHED'}
+                    disabled={deadlineReached || gameStatus === "FINISHED"}
                 />
             </div>
             <div class="px-3">:</div>
@@ -53,48 +64,55 @@ const { gameId, gameStatus, teams, bets, betId, betPoints, results, gameDate, de
                     type="number"
                     class="text-4xl text-center w-full max-w-20"
                     name="team_2_score_bet"
-                    value={bets?.split(':')[1] || ''}
-                    min="0" max="99"
+                    value={bets?.split(":")[1] || ""}
+                    min="0"
+                    max="99"
                     hx-on:change={`document.getElementById("submit-${gameId}").classList.remove("opacity-0")`}
-                    disabled={deadlineReached || gameStatus === 'FINISHED'}
+                    disabled={deadlineReached || gameStatus === "FINISHED"}
                 />
             </div>
             <div class="ml-4 text-center">
-                <span class="flag">{getFlag(teams.split(':')[1] || '')}</span>
-                <br/>
-                {(teams.split(':')[1] || '').toUpperCase()}
+                <span class="flag">{getFlag(teams.split(":")[1] || "")}</span>
+                <br />
+                {(teams.split(":")[1] || "").toUpperCase()}
             </div>
         </div>
         <div
             id={`bet-update-form-${gameId}-result`}
             class="absolute left-3 bottom-3"
-        />
+        >
+        </div>
         <button
-            type="submit" id={`submit-${gameId}`}
+            type="submit"
+            id={`submit-${gameId}`}
             class="opacity-0 transition-opacity absolute right-3 bottom-3 rounded-full w-10 h-10 bg-purple-900 text-white px-4 py-2 flex items-center justify-center"
         >
             &check;
         </button>
     </form>
     {
-        gameStatus === 'FINISHED' ? (
+        gameStatus === "FINISHED" ? (
             <div class="flex items-center justify-center mt-4">
                 <>
-                    <div class="text-2xl px-3">{results.split(':')[0]}</div>
+                    <div class="text-2xl px-3">{results.split(":")[0]}</div>
                     <div class="px-3">:</div>
-                    <div class="text-2xl px-3">{results.split(':')[1]}</div>
+                    <div class="text-2xl px-3">{results.split(":")[1]}</div>
                 </>
             </div>
         ) : (
-            <div class="h-8 mt-4 game-countdown text-center text-sm text-red-300" id={`game-countdown-${gameId}`}></div>
+            <div
+                class="h-8 mt-4 game-countdown text-center text-sm text-red-300"
+                id={`game-countdown-${gameId}`}
+            />
         )
     }
-    { 
-        gameStatus === 'FINISHED' && (
-        <div class="absolute bottom-3 left-3 text-2xl bg-purple-900 rounded-full w-10 h-10 flex items-center justify-center">
-            {betPoints}
-        </div>
-    )}
+    {
+        gameStatus === "FINISHED" && (
+            <div class="absolute bottom-3 left-3 text-2xl bg-purple-900 rounded-full w-10 h-10 flex items-center justify-center">
+                {betPoints}
+            </div>
+        )
+    }
 </div>
 
 <style>
@@ -105,33 +123,3 @@ const { gameId, gameStatus, teams, bets, betId, betPoints, results, gameDate, de
         @apply filter saturate-100;
     }
 </style>
-
-<script is:inline define:vars={{gameId, gameDate}}>
-    // games which are within 24 hours will have a countdown timer
-    const countdown = document.getElementById(`game-countdown-${gameId}`);
-    let interval;
-    if (countdown) {
-        function updateCountdown() {
-            const pad = (n) => n < 10 ? `0${n}` : n;
-            const now = new Date();
-            const diff = new Date(gameDate) - now - 1000 * 60 * 60;
-            if (diff < 0 && diff > -1000 * 60 * 60) {
-                countdown.innerHTML = 'Bets closed';
-                if (interval) clearInterval(interval);
-            } else if (diff < 24 * 1000 * 60 * 60 && gameDate.substring(0, 10) === now.toISOString().substring(0, 10)) {
-                const hours = Math.floor(diff / 1000 / 60 / 60);
-                const minutes = Math.floor(diff / 1000 / 60) % 60;
-                const seconds = Math.floor(diff / 1000) % 60;
-                countdown.innerHTML = `Bets close in ${hours}:${pad(minutes)}:${pad(seconds)}`;
-            } else if (diff < 48 * 1000 * 60 * 60) {
-                countdown.innerHTML = '1 Day left';
-            } else if (diff < 72 * 1000 * 60 * 60) {
-                countdown.innerHTML = '2 Days left';
-            }
-        }
-        updateCountdown();
-        interval = setInterval(() => {
-            updateCountdown();
-        }, 1000);
-    }
-</script>
