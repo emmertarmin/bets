@@ -26,8 +26,7 @@ interface Competition {
   id: number;
 }
 
-const pb_status: any[] = [];
-const headers: any = { "Content-Type": "html/text" };
+let pb_status: any[], headers: any;
 
 async function check_team(team: any) {
   let record: any = team;
@@ -61,7 +60,11 @@ async function check_team(team: any) {
 
 export async function GET({ request, cookies }: APIContext) {
 
-  // const query_params = new URL(request.url).searchParams;
+  // clear pb_status;
+  pb_status = [];
+  // set default header
+  headers = { "Content-Type": "html/text" };
+    // const query_params = new URL(request.url).searchParams;
   // console.log("Request params:", query_params);
 
   // authenticate with token first
