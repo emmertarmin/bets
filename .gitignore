@@ -1,5 +1,5 @@
 
-
+.vscode
 
 certbot/conf/*
 !certbot/conf/.gitkeep

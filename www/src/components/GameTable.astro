@@ -1,0 +1,43 @@
+---
+interface Props {
+	games: any;
+	bets: any;
+}
+
+import { getFlag } from "@/utils";
+
+const { games, bets } = Astro.props;
+---
+
+<table class="w-full text-xs md:text-lg text-center">
+  <thead>
+    <tr class="[&_th]:text-xs [&_th]:md:text-base">
+      <th>Date</th><th>Match</th><th>Result</th><th>Stage</th>
+      <th>Your Bet</th><th>Points</th>
+    </tr>
+  </thead>
+  <tbody class="[&_tr:nth-child(odd)]:bg-slate-800/10">
+    { games.filter((game: any) => game.expand?.team_1.name && game.expand?.team_2.name).map((game: any) => {
+      const bet = bets.find((bet: any) => bet.game === game.id);
+      return (
+      <tr class="[&_td]:p-0.5 [&_td]:sm:p-2">
+        <td class="text-right countdown">
+          <div class="flex flex-wrap items-center justify-between w-full gap-1">
+            <span class="min-w-24">{game.date}</span>
+            <span class="min-w-24">{game.status === "FINISHED" && game.status + ' ' + game.duration}</span>
+          </div>
+        </td>
+        <td class="font-semibold"><div class="flex flex-wrap items-center justify-center w-full gap-1">{game.expand ? <div class="text-right lg:w-2/5">
+          <span class="hidden lg:inline">{game.expand.team_1?.name}</span> {getFlag(game.expand.team_1?.country_code_3)}</div>
+          <div class="text-center px-1 md:px-3">VS</div>
+          <div class="lg:w-2/5 text-left">{getFlag(game.expand.team_2?.country_code_3)} <span class="hidden lg:inline">{game.expand.team_2?.name}</span></div> : ''
+        }</div></td>
+        <td>{game.status === "FINISHED" ? game.team_1_score + " : " + game.team_2_score : ""}</td>
+        <td>{game.stage === "GROUP_STAGE" ? game.group.replace('_',' ') : game.stage.replace('_',' ') }</td>
+        <td>{typeof bet?.team_1_score_bet != "undefined" ? `${bet?.team_1_score_bet}:${bet?.team_2_score_bet}` : <a class="rounded-sm bg-violet-700 px-1 no-underline hover:bg-lime-500 hover:text-slate-700" href="/bets">bet</a>}</td>
+        <td>{bet?.points}</td>
+      </tr>
+      );
+    })}
+  </tbody>
+</table>

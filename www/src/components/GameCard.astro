@@ -8,14 +8,12 @@ const { gameId, gameStatus, teams, bets, betId, betPoints, results, gameDate, de
     class={`game-card relative border border-slate-500 rounded-xl p-4 hover:transition-all ${gameStatus === 'FINISHED' ? 'bg-slate-800' : 'bg-slate-900 hover:border-purple-600'}`}
     id={`game-card-${gameId}`}
 >
-    {/* <p class="text-sm text-slate-300 text-center mb-2">match.type</p> */}
+    {/* <p class="text-sm text-slate-300 text-center mb-2">match.type</p>
     <p class="text-sm text-slate-300 text-center mb-2">
         {new Date(gameDate).toLocaleString('de-DE')}
-    </p>
-    <div
-        class="game text-center text-sm text-slate-300 mb-2"
-        data-date={gameDate}
-    >
+    </p> */}
+    <div class="game text-center text-sm text-slate-300 mb-2 game-date">
+        {gameDate}
     </div>
     <form
         hx-post={`/partials/games/${gameId}`}

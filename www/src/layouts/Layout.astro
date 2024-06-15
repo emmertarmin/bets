@@ -1,9 +1,10 @@
 ---
 interface Props {
 	title: string;
+  description?: string;
 }
 
-const { title } = Astro.props;
+const { title, description = "Euro 2024 Prediction Game" } = Astro.props;
 
 const isLoggedIn = (Astro.cookies.has('pbToken') && new URLSearchParams(Astro.cookies.get('pbToken')?.value).has("token"));
 
@@ -17,7 +18,7 @@ import euro2024_logo from '/assets/logos/UEFA_Euro_2024.svg?raw';
 <html lang="en" class="bg-gradient-to-r from-violet-900 to-slate-900 text-white min-h-screen">
 	<head>
 		<meta charset="UTF-8" />
-		<meta name="description" content="Astro description" />
+		<meta name="description" content={description} />
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
@@ -195,6 +196,7 @@ document.body.addEventListener('htmx:beforeOnLoad', function (evt) {
 function showCountdown(time, elm, options = {}) {
   var x = setInterval(function() {
     const diff = options.diff || 0;
+    const pre_text = options.pre_text || '';
     const post_text = options.post_text || '';
     // Get today's date and time
     const now = new Date().getTime();
@@ -207,7 +209,7 @@ function showCountdown(time, elm, options = {}) {
     const seconds = Math.floor((distance % (1000 * 60)) / 1000);
   
     // Display the result in the element with id="demo"
-    elm.innerHTML = (days > 0 ? days + "d " : '') + (hours > 0 ? hours + "h " : '') + minutes + "m " + seconds + "s" + post_text;
+    elm.innerHTML = pre_text + (days > 0 ? days + "d " : '') + (hours > 0 ? hours + "h " : '') + minutes + "m " + seconds + "s" + post_text;
   
     // If the count down is finished, write some text
     if (distance <= 0) {
