@@ -1,14 +1,11 @@
 ---
 import Layout from "@/layouts/Layout.astro";
-import { getFlag } from "@/utils";
 import { getUser, getAllUsers, getMatches, getUserBets } from "@/services/dbhelper";
 
 const pbToken = Astro.cookies.get("pbToken")?.value || '';
 
 const currentUser = await getUser(pbToken);
 const users = await getAllUsers(pbToken);
-const games = await getMatches(pbToken);
-const bets = await getUserBets(pbToken);
 
 ---
 
@@ -33,56 +30,5 @@ const bets = await getUserBets(pbToken);
       </tbody>
     </table>
   </center>
-
-  <div class="w-full">
-    <div class="text-3xl p-3 mt-10 mb-5 text-center">Upcoming and recent matches</div>
-    <table class="w-full text-xs md:text-lg text-center">
-      <thead>
-        <tr class="[&_th]:text-sm [&_th]:md:text-xl">
-          <th>Date</th><th>Match</th><th>Result</th><th>Stage</th>
-          <th class="text-right">Your Bet</th><th>Points</th>
-        </tr>
-      </thead>
-      <tbody class="[&_tr:nth-child(odd)]:bg-slate-800">
-        { games.filter((game: any) => game.expand?.team_1.name && game.expand?.team_2.name).map((game: any) => {
-          const bet = bets.find((bet: any) => bet.game === game.id);
-          return (
-          <tr>
-            <td class="text-right countdown"><span></span><span>{game.date}</span></td>
-            <td class="font-semibold"><div class="flex items-center justify-center w-full gap-1">{game.expand ? <div class="text-right w-2/5">
-              <span class="hidden lg:inline">{game.expand.team_1?.name}</span> {getFlag(game.expand.team_1?.country_code_3)}</div>
-              <div class="text-center px-1 sm:px-3">VS</div>
-              <div class="w-2/5 text-left">{getFlag(game.expand.team_2?.country_code_3)} <span class="hidden lg:inline">{game.expand.team_2?.name}</span></div> : ''
-            }</div></td>
-            <td>{game.status === "FINISHED" ? game.team_1_result + " : " + game.team_2_result : ""}</td>
-            <td>{game.stage === "GROUP_STAGE" ? game.group.replace('_',' ') : game.stage.replace('_',' ') }</td>
-            <td>{bet?.team_1_score_bet}:{bet?.team_2_score_bet}</td>
-            <td>{bet?.points}</td>
-          </tr>
-          );
-        })}
-      </tbody>
-    </table>
-  </div>
-
   <!-- <pre>{JSON.stringify({currentUser, users}, null, 2)}</pre> -->
 </Layout>
-
-<script is:inline>
-const countdowns = document.getElementsByClassName("countdown");
-for (const c of countdowns) {
-  const now = new Date().getTime();
-  // const spans = elm.getElementsByTagName("span");
-  const spans = c.getElementsByTagName("span");
-  const matchDate = new Date(spans[1].innerText);
-  // less than 48 hours?
-  if (spans.length == 2) {
-    if(matchDate.getTime() - now < 259200000) {
-      showCountdown(matchDate.getTime(), spans[0], { post_text: " left, "});
-    }
-    const matchTime = matchDate.toLocaleTimeString().split(":");
-    matchTime.pop();
-    spans[1].innerText = matchDate.toLocaleDateString() + ', ' + matchTime.join(":");
-  }
-};
-</script>

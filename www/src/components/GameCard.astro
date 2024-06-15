@@ -10,7 +10,7 @@ const { gameId, gameStatus, teams, bets, betId, betPoints, results, gameDate, de
 >
     {/* <p class="text-sm text-slate-300 text-center mb-2">match.type</p> */}
     <p class="text-sm text-slate-300 text-center mb-2">
-        {new Date(gameDate).toLocaleString('de-DE')}
+        {new Date(gameDate).toLocaleString('de-DE').replace(/:\d\d$/, '')}
     </p>
     <div
         class="game text-center text-sm text-slate-300 mb-2"
@@ -86,7 +86,7 @@ const { gameId, gameStatus, teams, bets, betId, betPoints, results, gameDate, de
                 </>
             </div>
         ) : (
-            <div class="h-8 mt-4 game-countdown text-center text-sm"></div>
+            <div class="h-8 mt-4 game-countdown text-center text-sm text-red-300" id={`game-countdown-${gameId}`}></div>
         )
     }
     { 
@@ -105,3 +105,29 @@ const { gameId, gameStatus, teams, bets, betId, betPoints, results, gameDate, de
         @apply filter saturate-100;
     }
 </style>
+
+<script is:inline define:vars={{gameId, gameDate}}>
+    // games which are within 24 hours will have a countdown timer
+    const countdown = document.getElementById(`game-countdown-${gameId}`);
+    let interval;
+    if (countdown) {
+        function updateCountdown() {
+            const pad = (n) => n < 10 ? `0${n}` : n;
+            const now = new Date();
+            const diff = new Date(gameDate) - now - 1000 * 60 * 60;
+            if (diff < 0 && diff > -1000 * 60 * 60) {
+                countdown.innerHTML = 'Bets closed';
+                if (interval) clearInterval(interval);
+            } else if (diff < 24 * 1000 * 60 * 60) {
+                const hours = Math.floor(diff / 1000 / 60 / 60);
+                const minutes = Math.floor(diff / 1000 / 60) % 60;
+                const seconds = Math.floor(diff / 1000) % 60;
+                countdown.innerHTML = `Bets close in ${hours}:${pad(minutes)}:${pad(seconds)}`;
+            }
+        }
+        updateCountdown();
+        interval = setInterval(() => {
+            updateCountdown();
+        }, 1000);
+    }
+</script>
