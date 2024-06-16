@@ -21,8 +21,83 @@ if (Astro.request.method === "DELETE") {
 ---
 
 <Layout title="Account">
-  <h1>Account</h1>
-  <pre>{JSON.stringify({userData}, null, 2)}</pre>
+  <main class="flex pt-[5%] px-3 justify-center">
+    <form id="login-form" hx-post="/api/auth/account" hx-target="#response" hx-swap="innerHTML" class="flex flex-col items-center w-full">
+      <h1 class="text-5xl mb-5">
+        Account
+      </h1>
+      <div class="text-sm text-slate-500">
+        Created: {new Date(userData.created).toLocaleString("de-DE").replace(/:\d\d$/, "")}
+      </div>
+      <div id="response" class="mb-5 text-sm text-amber-400">
+        <p class="text-slate-500">
+          Last updated: {new Date(userData.updated).toLocaleString("de-DE").replace(/:\d\d$/, "")}
+        </p>
+      </div>
+      <div class="w-full sm:w-96">
+        <div class="mb-2 w-full">
+          <label for="email" class="block text-sm text-slate-300">Email</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            value={userData.email}
+            required
+            class="mt-1 p-2 w-full bg-transparent border border-slate-400 rounded-md"
+          />
+        </div>
+        <div class="mx-2 mb-4 flex items-center">
+          {userData.emailVisibility ?
+          <input type="checkbox"
+            id="checkbox"
+            name="emailVisibility" 
+            class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+            checked
+          /> :
+          <input type="checkbox"
+            id="checkbox"
+            name="emailVisibility" 
+            class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+          /> }
+          <label for="checkbox" class="ms-2 text-sm text-slate-300">Email visbile (in Leaderboard)</label>
+        </div>        
+        <div class="mb-6 w-full">
+          <label for="username" class="block text-sm text-slate-300">Username (for leaderboard)</label>
+          <input
+            type="text"
+            id="username"
+            name="username"
+            value={userData.username}
+            required
+            class="mt-1 p-2 w-full bg-transparent border border-slate-400 rounded-md"
+          />
+        </div>
+        <div class="mb-4 w-full">
+          <label for="password" class="block text-sm text-slate-300">Fill out to change Password (min. 5 characters)</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            hx-on:change="(this.value.trim().length > 0) ? document.getElementById('passwordConfirm').required = true : document.getElementById('passwordConfirm').required = false"
+            class="mt-1 p-2 w-full bg-transparent border border-slate-400 rounded-md"
+          />
+        </div>
+        <div class="mb-6 w-full">
+          <label for="passwordConfirm" class="block text-sm text-slate-300">Confirm Password</label>
+          <input
+            type="password"
+            id="passwordConfirm"
+            name="passwordConfirm"
+            class="mt-1 p-2 w-full bg-transparent border border-slate-400 rounded-md"
+          />
+        </div>
+        <button type="submit" class="w-full bg-gradient-to-r from-purple-600 to-violet-900 hover:from-purple-500 hover:to-violet-800 rounded-md p-3 mt-3 transition-colors">
+          Update Account
+        </button>
+        <!-- <button type='submit' hx-delete="/api/auth/account" hx-target="#response" class='w-full sm:w-96 bg-gradient-to-r from-violet-600 to-red-900 hover:from-red-600 hover:to-red-800 rounded-md px-3 h-12' disabled>
+          Delete Account
+        </button> -->
+      </div>
+    </form>
 
-  <!-- <button hx-delete hx-trigger="click" hx-swap="none">Logout</button> -->
 </Layout>
