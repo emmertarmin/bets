@@ -1,8 +1,8 @@
-import { pbGET } from "@/services/pocketbase";
+import { pbGET, pbPATCH } from "@/services/pocketbase";
 
 export function getUserId(cookie: string) {
     const cookieParams = new URLSearchParams(cookie);
-    const id = cookieParams.get("user") || '';
+    const id = cookieParams.get("user") || '~'; // do not set blank otherwise all users are returned
     return id;
 }
 
@@ -10,6 +10,13 @@ export const getUser = async (pbToken: string) => {
     return await pbGET(`/api/collections/users/records/${getUserId(pbToken)}`, {
         perPage: 200
     }, pbToken).then((res) => res.data);
+}
+
+export const updateUser = async(pbToken: string, data: any) => {
+    console.log(pbToken, data);
+    return await pbPATCH(`/api/collections/users/records/${getUserId(pbToken)}`
+    , data
+    , pbToken).then((res) => res );
 }
 
 export const getAllUsers = async (pbToken: string) => {

@@ -23,7 +23,7 @@ const users = await getAllUsers(pbToken);
       <tbody>
         {users.map((user: any, index: number) => (
           <tr class={user.id === currentUser.id ? "text-purple-400 bg-slate-900 font-bold" : ""}>
-            <td title={user.email}>{user.username} {(index === 0 && user.points > 0) && '🏆'}</td>
+            <td title={user.emailVisibility ? user.email : user.username}>{user.username} {(index === 0 && user.points > 0) && '🏆'}</td>
             <td class="text-center">{user.points}</td>
           </tr>
         ))}
