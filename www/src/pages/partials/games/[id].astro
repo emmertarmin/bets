@@ -1,48 +1,65 @@
 ---
-
-import GameCardForm from '@/components/GameCardForm.astro';
-import { pbPOST } from '@/services/pocketbase'
-import { pbPATCH } from '@/services/pocketbase'
+import GameCardForm from "@/components/GameCardForm.astro"
+import { pbGET, pbPOST } from "@/services/pocketbase"
+import { pbPATCH } from "@/services/pocketbase"
 
 let props: any = {}
 
-const { id: gameId } = Astro.params as { id: string };
+const { id: gameId } = Astro.params as { id: string }
 
 if (Astro.request.method === "POST") {
   try {
-    const pbToken = Astro.cookies.get('pbToken')?.value
-    const cookieParams = new URLSearchParams(Astro.cookies.get("pbToken")?.value)
+    const pbToken = Astro.cookies.get("pbToken")?.value
+    const cookieParams = new URLSearchParams(
+      Astro.cookies.get("pbToken")?.value,
+    )
     const userId = cookieParams.get("user")
 
     const formData = await Astro.request.formData()
     const formObject: any = {}
     for (const key of formData.keys()) {
-        formObject[key] = formData.get(key)
+      formObject[key] = formData.get(key)
     }
 
-    if (formObject.betId) {
-        const betRecord = await pbPATCH(`/api/collections/bets/records/${formObject.betId}`, {
-            team_1_score_bet: formObject.team_1_score_bet,
-            team_2_score_bet: formObject.team_2_score_bet
+    const gameRecord = await pbGET(
+      `/api/collections/games/records/${gameId}`,
+      {},
+      pbToken,
+    )
+
+    const now = new Date()
+    const gameDate = new Date(gameRecord.data.date)
+    const diff = gameDate.getTime() - now.getTime() - 1000 * 60 * 60
+
+    if (diff > 0) {
+
+      if (formObject.betId) {
+        const betRecord = await pbPATCH(`/api/collections/bets/records/${formObject.betId}`,{
+          team_1_score_bet: formObject.team_1_score_bet,
+          team_2_score_bet: formObject.team_2_score_bet,
         }, pbToken)
 
         props.betId = betRecord.data.id
-    } else {
-
-      const betRecord = await pbPOST(`/api/collections/bets/records/${formObject.betId}`, {
+      } else {
+        const betRecord = await pbPOST(`/api/collections/bets/records/${formObject.betId}`, {
           user: userId,
           game: formObject.gameId,
           team_1_score_bet: formObject.team_1_score_bet,
           team_2_score_bet: formObject.team_2_score_bet
-      }, pbToken)
+        }, pbToken)
 
-      props.betId = betRecord.data.id
+        props.betId = betRecord.data.id
+      }
     }
 
     props = {
-        ...formObject,
-        ...props,
-        bets: typeof formObject.team_1_score_bet !== 'undefined' && typeof formObject.team_2_score_bet !== 'undefined' ? `${formObject.team_1_score_bet}:${formObject.team_2_score_bet}` : null
+      ...formObject,
+      ...props,
+      bets:
+        typeof formObject.team_1_score_bet !== "undefined" &&
+        typeof formObject.team_2_score_bet !== "undefined"
+          ? `${formObject.team_1_score_bet}:${formObject.team_2_score_bet}`
+          : null,
     }
   } catch (error) {
     if (error instanceof Error) {
@@ -52,14 +69,13 @@ if (Astro.request.method === "POST") {
 }
 
 const { teams, bets, betId, results, gameDate } = props as any
-
 ---
 
 <GameCardForm
-    gameId={gameId}
-    teams={teams}
-    bets={bets}
-    betId={betId}
-    results={results}
-    gameDate={gameDate}
+  gameId={gameId}
+  teams={teams}
+  bets={bets}
+  betId={betId}
+  results={results}
+  gameDate={gameDate}
 />
