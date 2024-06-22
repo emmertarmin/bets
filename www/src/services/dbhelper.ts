@@ -39,3 +39,11 @@ export const getUserBets = async (pbToken: string) => {
         perPage: 200
     }, pbToken).then(res => res.data.items)
 }
+
+export const getGroups = async (pbToken: string) => {
+    return await pbGET('/api/collections/groups/records', {
+        sort: 'name',
+        expand: 'team_1,team_2,team_3,team_4',
+        perPage: 200
+    }, pbToken).then(res => res.data.items)
+}
