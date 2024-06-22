@@ -31,7 +31,7 @@ const {
       sort by group_pounts, group_advantage = manual manipulation because of direct comparison, fairplay or uefa qualifier ranking
        - https://www.wettbasis.com/sportwetten-news/em-2024-punktgleichheit-gruppendritte-regeln-modus
       */
-    teams.sort((a,b) => (b.group_points-a.group_points || b.group_advantage-a.group_advantage || b.goal_diff-a.goal_diff || b.goals-a.goals)).map((team:any, index: number) => 
+    teams.sort((a: any, b: any) => (b.group_points-a.group_points || b.group_advantage-a.group_advantage || b.goal_diff-a.goal_diff || b.goals-a.goals)).map((team:any, index: number) => 
     <div class={`py-3 grid grid-cols-7 gap-1 ${index < 2 ? "bg-slate-800" : ""}`}>
       <div class="flex flex-row col-span-2 space-x-2">
         <div class="flex-none px-1">{index+1}</div>
