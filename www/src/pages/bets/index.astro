@@ -72,12 +72,17 @@ const bets = await getUserBets(pbToken);
         })
     }
   </div>
+  <div>
+      <p class="text-center mt-5 lg:mt-6"><strong>4 points</strong> for guessing the exact score &bull; <strong>3 points</strong> for guessing the goal difference &bull; <strong>2 points</strong> for guessing the winner &bull; <strong>0 points</strong> in all other cases</p>
+  </div>
   <!-- <pre>{JSON.stringify(userData, null, 2)}</pre> -->
   <!-- <pre>{JSON.stringify(games, null, 2)}</pre> -->
   <!-- <pre>{JSON.stringify(bets, null, 2)}</pre> -->
 </Layout>
 
-<script define:vars={{ games: games.map((g: any) => ({id: g.id, date: g.date})) }}>
+<script
+  define:vars={{ games: games.map((g: any) => ({ id: g.id, date: g.date })) }}
+>
   const pad = (n) => (n < 10 ? `0${n}` : n);
   function updateCountdown() {
     games.forEach((game) => {
