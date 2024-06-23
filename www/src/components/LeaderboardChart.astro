@@ -39,7 +39,8 @@ games
             const bet = bets.find(
                 (bet: any) => bet.user === key && bet.game === game.id,
             );
-            if (!bet) {
+            if (!bet?.id) {
+              // console.log('no bet', game.num, game.name, key)
                 datasetsObj[key] = [
                     ...datasetsObj[key],
                     getLast(datasetsObj[key]),

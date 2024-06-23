@@ -36,7 +36,7 @@ const {
     {
       bets !== results ? (
         <div class="font-mono text-center">
-          <div class="opacity-75 line-through">{bets}</div>
+          <div class="opacity-75 line-through">{!bets.includes('undefined') ? bets : <>&nbsp;</>}</div>
           <div class="opacity-75">{results}</div>
           {betPoints > 0 ? (
             <div class="font-bold">&nbsp;{betPoints}p</div>
