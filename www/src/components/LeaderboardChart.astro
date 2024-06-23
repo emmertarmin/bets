@@ -1,0 +1,163 @@
+---
+import {
+    getMatches,
+    getAllBets,
+    getAllUsers,
+    getUserId,
+} from "@/services/dbhelper";
+
+const pbToken = Astro.cookies.get("pbToken")?.value || "";
+
+const bets = await getAllBets(pbToken);
+const games = await getMatches(pbToken);
+const users = await getAllUsers(pbToken);
+const currentUser = await getUserId(pbToken);
+
+type Data = {
+    labels: string[];
+    datasets: {
+        label: string;
+        data: number[];
+    }[];
+};
+
+const labels: Data["labels"] = games
+    .filter((game: any) => game.status === "FINISHED")
+    .map((g: any) => g.name);
+
+let datasetsObj: any = {};
+users.forEach((u: any) => {
+    datasetsObj[u.id] = [0];
+});
+
+const getLast = (arr: any[]) => arr[arr.length - 1] || null;
+
+games
+    .filter((game: any) => game.status === "FINISHED")
+    .forEach((game: any) => {
+        Object.keys(datasetsObj).forEach((key: any) => {
+            const bet = bets.find(
+                (bet: any) => bet.user === key && bet.game === game.id,
+            );
+            if (!bet) {
+                datasetsObj[key] = [
+                    ...datasetsObj[key],
+                    getLast(datasetsObj[key]),
+                ];
+                return;
+            }
+            const delta =
+                (bet.team_1_score_bet == game.team_1_score && bet.team_2_score_bet == game.team_2_score)
+                    ? 4
+                    : (bet.team_1_score_bet - bet.team_2_score_bet == game.team_1_score - game.team_2_score)
+                      ? 3
+                      : bet.team_1_score_bet > bet.team_2_score_bet &&
+                          game.team_1_score > game.team_2_score
+                        ? 2
+                        : bet.team_1_score_bet < bet.team_2_score_bet &&
+                            game.team_1_score < game.team_2_score
+                          ? 2
+                          : 0;
+            datasetsObj[key] = [
+                ...datasetsObj[key],
+                getLast(datasetsObj[key]) + delta,
+            ];
+        });
+    });
+
+let datasets: Data["datasets"] = Object.keys(datasetsObj)
+    .map((key) => {
+        const user = users.find((u: any) => u.id === key);
+        return {
+            label: user.username,
+            data: datasetsObj[key],
+            borderColor:
+                key === currentUser
+                    ? "#15fadc" // your diagram
+                    : user.points === Math.max(...users.map((u: any) => u.points))
+                      ? "#facc15" // winner's diagram
+                      : "#ffffff33", // every other diagram
+            hoverBackgroundColor: "rgba(232,105,90,0.8)",
+            hoverBorderColor: "orange",
+        };
+    })
+    .toSorted((a: any, b: any) => a.points - b.points)
+    .toSorted((a: any, b: any) =>
+        a.user === currentUser ? -1 : b.user === currentUser ? 1 : 0,
+    );
+
+const data: Data = {
+    labels: ["", ...labels],
+    datasets,
+};
+---
+
+<div style="height: 800px">
+    <canvas id="myChart" style="height: 800px"></canvas>
+    <!-- <pre>{JSON.stringify(bets.filter(b => b.user == currentUser), null, 2)}</pre> -->
+</div>
+
+<style>
+    #myChart {
+        /* background-color: rgba(0, 0, 0, 0.3); */
+        margin-top: 4rem;
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js" is:inline></script>
+
+<script define:vars={{ data }} is:inline>
+    const ctx = document.getElementById("myChart");
+
+    new Chart(ctx, {
+        type: "line",
+        data: data,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: "top",
+                    labels: {
+                        color: "#ffffff",
+                        font: {
+                            size: 16,
+                        },
+                    },
+                },
+                title: {
+                    display: false,
+                    text: "Chart.js Line Chart",
+                },
+            },
+            scales: {
+                y: {
+                    ticks: {
+                        color: "#ffffff",
+                        font: {
+                            size: 16,
+                        },
+                        stepSize: 1,
+                        beginAtZero: true,
+                    },
+                    grid: {
+                        display: false,
+                    },
+                },
+                x: {
+                    ticks: {
+                        color: "white",
+                        font: {
+                            size: 12,
+                        },
+                        stepSize: 1,
+                        beginAtZero: true,
+                    },
+                    grid: {
+                        display: false,
+                    },
+                },
+            },
+        },
+    });
+</script>

@@ -33,6 +33,13 @@ export const getMatches = async (pbToken: string) => {
     }, pbToken).then(res => res.data.items)
 }
 
+export const getAllBets = async (pbToken: string) => {
+    return await pbGET('/api/collections/bets/records', {
+        perPage: 500,
+        expand: 'user,game'
+    }, pbToken).then(res => res.data.items)
+}
+
 export const getUserBets = async (pbToken: string) => {
     return await pbGET('/api/collections/bets/records', {
         filter: `user="${getUserId(pbToken)}"`,
