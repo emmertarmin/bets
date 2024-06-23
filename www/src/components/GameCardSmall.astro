@@ -1,0 +1,61 @@
+---
+import { getFlag } from "@/utils";
+
+const {
+  gameId,
+  gameStatus,
+  teams,
+  bets,
+  betId,
+  betPoints,
+  results,
+  gameDate,
+  deadlineReached,
+} = Astro.props;
+---
+
+<div
+  class={`game-card relative border border-slate-500 rounded-xl p-1 hover:transition-all ${gameStatus === "FINISHED" ? "bg-slate-800" : "bg-slate-900 hover:border-purple-600"}`}
+  id={`game-card-${gameId}`}
+>
+  {/* <p class="text-sm text-slate-300 text-center mb-2">match.type</p> */}
+  <p class="text-sm text-slate-300 text-center mb-2">
+    {new Date(gameDate).toLocaleString("de-DE").replace(/:\d\d$/, "")}
+  </p>
+  <div
+    class="game text-center text-sm text-slate-300 mb-2"
+    data-date={gameDate}
+  >
+  </div>
+  <div class="flex items-center justify-center">
+    <div class="mr-4 text-center">
+      <span class="flag">{getFlag(teams.split(":")[0] || "")}</span>
+      <br />
+      {(teams.split(":")[0] || "").toUpperCase()}
+    </div>
+    {
+      bets !== results ? (
+        <div class="font-mono text-center">
+          <div class="opacity-75 line-through">{bets}</div>
+          <div class="opacity-75">{results}</div>
+          {betPoints > 0 ? (
+            <div class="font-bold">&nbsp;{betPoints}p</div>
+          ) : (
+            <div>&nbsp;</div>
+          )}
+        </div>
+      ) : (
+        <div class="font-mono text-center">
+          <div>{results}</div>
+          <div>&nbsp;</div>
+          <div class="font-bold">&nbsp;{betPoints}p</div>
+        </div>
+      )
+    }
+    <div class="ml-4 text-center">
+      <span class="flag">{getFlag(teams.split(":")[1] || "")}</span>
+      <br />
+      {(teams.split(":")[1] || "").toUpperCase()}
+    </div>
+  </div>
+</div>
