@@ -34,20 +34,16 @@ const {
       {(teams.split(":")[0] || "").toUpperCase()}
     </div>
     {
-      bets !== results ? (
-        <div class="font-mono text-center">
-          <div class="opacity-75 line-through">{bets}</div>
-          <div class="opacity-75">{results}</div>
-          {betPoints > 0 ? (
-            <div class="font-bold">&nbsp;{betPoints}p</div>
-          ) : (
-            <div>&nbsp;</div>
-          )}
-        </div>
-      ) : (
+      betPoints == 4 ? (
         <div class="font-mono text-center">
           <div>{results}</div>
           <div>&nbsp;</div>
+          <div class="font-bold">&nbsp;{betPoints}p</div>
+        </div>
+      ) : (
+        <div class="font-mono text-center">
+          <div class={`opacity-75 ${bets.length && "line-through"}`}>{bets.length ? bets : <span>&nbsp;</span>}</div>
+          <div class="opacity-75">{results}</div>
           <div class="font-bold">&nbsp;{betPoints}p</div>
         </div>
       )
