@@ -1,0 +1,29 @@
+---
+import Layout from "@/layouts/Layout.astro"
+import GroupCard from "@/components/GroupCard.astro";
+import { getGroups } from "@/services/dbhelper";
+
+const pbToken = Astro.cookies.get("pbToken")?.value || '';
+
+const groups = await getGroups(pbToken);
+
+---
+
+<Layout title="Groups">
+  <div
+    class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 lg:gap-8 px-5 lg:px-8"
+  >
+    {
+      groups.map((group: any) => {
+        return (
+          <GroupCard
+            id={group.id}
+            name={group.name}
+            teams={Object.keys(group.expand).map(team => group.expand[team])}
+          />
+        );
+      })
+    }
+  </div>
+
+</Layout>

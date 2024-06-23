@@ -1,0 +1,63 @@
+---
+import { getFlag } from "@/utils";
+
+const {
+  id,
+  name,
+  teams
+} = Astro.props;
+---
+
+<div
+  class="group-card relative border border-slate-500 rounded-xl p-4 hover:transition-all bg-slate-900 hover:border-purple-600"
+  id={`group-card-${id}`}
+>
+  <div
+    class="group text-center text-xl text-slate-300 mb-4"
+  >{name}
+  </div>
+  <div
+    class="grid grid-cols-1 w-full text-xs divide-y divide-slate-700 text-center"
+  >
+    <div class="grid grid-cols-7 gap-1 py-2">
+      <div class="col-span-2 text-left">Team</div>
+      <div title="Played">Played</div>
+      <div title="Points" class="font-bold">Points</div>
+      <div title="Goals">Goals</div>
+      <div title="Goals Against">Against</div>
+      <div title="Goal Difference">Diff</div>
+    </div>
+    { /*
+      sort by group_pounts, group_advantage = manual manipulation because of direct comparison, fairplay or uefa qualifier ranking
+       - https://www.wettbasis.com/sportwetten-news/em-2024-punktgleichheit-gruppendritte-regeln-modus
+      */
+    teams.sort((a: any, b: any) => (b.group_points-a.group_points || b.group_advantage-a.group_advantage || b.goal_diff-a.goal_diff || b.goals-a.goals)).map((team:any, index: number) => 
+    <div class={`py-3 grid grid-cols-7 gap-1 ${index < 2 ? "bg-slate-800" : ""}`}>
+      <div class="flex flex-row col-span-2 space-x-2">
+        <div class="flex-none px-1">{index+1}</div>
+        <div class="flex-none">
+          {getFlag(team.country_code_3)}
+        </div>
+        <div class="flex-grow">
+          {team.name}
+        </div>
+      </div>
+      <div title="Played">
+        {team.played}
+      </div>
+      <div title="Points" class="font-bold">
+        {team.group_points}
+      </div>
+      <div title="Goals">
+        {team.goals}
+      </div>
+      <div title="Goals Against">
+        {team.against}
+      </div>
+      <div title="Goal Difference">
+        {team.goal_diff}
+      </div>
+    </div>
+    )}
+  </div>
+</div>

@@ -49,8 +49,12 @@ import euro2024_logo from "/assets/logos/UEFA_Euro_2024.svg?raw";
                 <div class="ml-1 sm:ml-6">
                   <ul class="flex items-center sm:space-x-4">
                     <li>
-                      <a class={currentPath === "" ? "active" : ""} href="/">
-                        Leaderboard
+                      <a
+                        class={currentPath === "" ? "active" : ""}
+                        href="/"
+                        title="Leaderboard"
+                      >
+                        <span class="hidden sm:inline">Leaderboard</span><span class="sm:hidden">Ldrs</span>
                       </a>
                     </li>
                     <li>
@@ -59,6 +63,15 @@ import euro2024_logo from "/assets/logos/UEFA_Euro_2024.svg?raw";
                         href="/bets"
                       >
                         Bets
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        class={currentPath === "groups" ? "active" : ""}
+                        href="/groups"
+                        title="Groups"
+                      >
+                        <span class="hidden sm:inline">Groups</span><span class="sm:hidden">Grps</span>
                       </a>
                     </li>
                   </ul>
