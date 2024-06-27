@@ -123,10 +123,10 @@ export async function GET({ request, cookies }: APIContext) {
       const home_record = home_tla ? await check_team(match.homeTeam) : { id: null };
       const away_record = away_tla ? await check_team(match.awayTeam) : { id: null };
       const utc_date = new Date(Date.parse(match.utcDate));
-      const game_name = home_tla ? home_tla.toUpperCase() + ' v ' + away_tla.toUpperCase() : '';
+      const game_name = home_tla && away_tla ? home_tla.toUpperCase() + ' v ' + away_tla.toUpperCase() : '';
       // create data
       const matchData = new FormData();
-        matchData.set('num', i.toString());
+        // matchData.set('num', i.toString());
         matchData.set('name', game_name)
         matchData.set('date', utc_date.toISOString());
         matchData.set('status', match.status);

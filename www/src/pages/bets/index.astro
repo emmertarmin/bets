@@ -17,10 +17,10 @@ const bets = await getUserBets(pbToken);
   >
     {
       games
-        .filter(
-          (game: any) => game.expand?.team_1.name && game.expand?.team_2.name,
-        )
         .filter((game: any) => game.status === "FINISHED")
+        .filter(
+          (game: any) => game.expand?.team_1?.name && game.expand?.team_2?.name,
+        )
         .map((game: any) => {
           const bet = bets.find((bet: any) => bet.game === game.id);
           const deadline = new Date(game.date);
@@ -30,7 +30,7 @@ const bets = await getUserBets(pbToken);
             <GameCardSmall
               gameId={game.id}
               gameStatus={game.status}
-              teams={`${game.expand?.team_1.country_code_3}:${game.expand?.team_2.country_code_3}`}
+              teams={`${game.expand?.team_1?.country_code_3}:${game.expand?.team_2?.country_code_3}`}
               bets={`${bet?.team_1_score_bet}:${bet?.team_2_score_bet}`}
               betId={bet?.id}
               betPoints={bet?.points}
@@ -47,10 +47,10 @@ const bets = await getUserBets(pbToken);
   >
     {
       games
-        .filter(
-          (game: any) => game.expand?.team_1.name && game.expand?.team_2.name,
-        )
         .filter((game: any) => game.status !== "FINISHED")
+        .filter(
+          (game: any) => game.expand?.team_1?.name && game.expand?.team_2?.name,
+        )
         .map((game: any) => {
           const bet = bets.find((bet: any) => bet.game === game.id);
           const deadline = new Date(game.date);
@@ -60,7 +60,7 @@ const bets = await getUserBets(pbToken);
             <GameCard
               gameId={game.id}
               gameStatus={game.status}
-              teams={`${game.expand?.team_1.country_code_3}:${game.expand?.team_2.country_code_3}`}
+              teams={`${game.expand?.team_1?.country_code_3}:${game.expand?.team_2?.country_code_3}`}
               bets={`${bet?.team_1_score_bet}:${bet?.team_2_score_bet}`}
               betId={bet?.id}
               betPoints={bet?.points}
