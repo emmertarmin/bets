@@ -14,7 +14,10 @@ export async function POST({ request, cookies }: APIContext) {
   headers = { "Content-Type": "html/text" };
 
   const today = new Date(Date.now());
-  const date_filter = today.toISOString().split("T");
+  const date_filter_to = today.toISOString().split("T");
+//   today.setDate(today.getDate() - 1);
+  const date_filter_from = today.toISOString().split("T");
+
     // const query_params = new URL(request.url).searchParams;
   // console.log("Request params:", query_params);
 
@@ -40,7 +43,7 @@ export async function POST({ request, cookies }: APIContext) {
 
   let json_data: any = null;
   try {
-    const api_response = await fetch(`http://api.football-data.org/v4/competitions/2018/matches/?status=FINISHED&dateFrom=${date_filter[0]}&dateTo=${date_filter[0]}`, {
+    const api_response = await fetch(`http://api.football-data.org/v4/competitions/2018/matches/?status=FINISHED&dateFrom=${date_filter_from[0]}&dateTo=${date_filter_to[0]}`, {
         headers: {
             "X-Auth-Token": auth_token
         }
@@ -63,8 +66,13 @@ export async function POST({ request, cookies }: APIContext) {
       const matchData = new FormData();
         matchData.set('status', match.status);
         matchData.set('duration', match.score.duration);
-        matchData.set('team_1_score', match.score.fullTime.home.toString() || 0);
-        matchData.set('team_2_score', match.score.fullTime.away.toString() || 0);
+        if (match.score.duration != "REGULAR" && "regularTime" in match.score) {
+          matchData.set('team_1_score', match.score.regularTime.home.toString() || 0);
+          matchData.set('team_2_score', match.score.regularTime.away.toString() || 0);  
+        } else {
+          matchData.set('team_1_score', match.score.fullTime.home.toString() || 0);
+          matchData.set('team_2_score', match.score.fullTime.away.toString() || 0);  
+        }
         matchData.set('fd_id', match.id.toString());
       // console.log("match data:", matchData);
       try {
